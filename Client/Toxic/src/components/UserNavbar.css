@@ -1,0 +1,137 @@
+
+/* ===== User Navbar ===== */
+
+.user-navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+
+  padding: 16px 5%;
+  background: #ffffff;
+  border-bottom: 1px solid #e5eaf2;
+  box-shadow: 0 4px 18px rgba(15, 23, 42, 0.06);
+}
+
+/* ===== Brand ===== */
+
+.user-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  color: #26345c;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+/* ===== Navigation Links ===== */
+
+.user-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.user-nav-links a {
+  padding: 11px 16px;
+  border-radius: 10px;
+
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+
+  transition: all 0.2s ease;
+}
+
+.user-nav-links a:hover {
+  background: #f0f2ff;
+  color: #4f46e5;
+}
+
+.user-nav-links a.active {
+  background: #eef2ff;
+  color: #4f46e5;
+}
+
+/* ===== Logout Button ===== */
+
+.user-logout {
+  padding: 11px 18px;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+
+  background: #ffffff;
+  color: #475569;
+
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.user-logout:hover {
+  background: #fff1f2;
+  border-color: #fecdd3;
+  color: #be123c;
+}
+
+/* ===== Tablet ===== */
+
+@media (max-width: 900px) {
+  .user-navbar {
+    flex-wrap: wrap;
+    gap: 14px;
+    padding: 15px 4%;
+  }
+
+  .user-nav-links {
+    order: 3;
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+}
+
+/* ===== Mobile ===== */
+
+@media (max-width: 600px) {
+  .user-navbar {
+    padding: 14px 16px;
+  }
+
+  .user-brand {
+    font-size: 18px;
+  }
+
+  .user-nav-links {
+    gap: 5px;
+  }
+
+  .user-nav-links a {
+    padding: 9px 10px;
+    font-size: 12px;
+  }
+
+  .user-logout {
+    padding: 9px 12px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 380px) {
+  .user-nav-links a {
+    padding: 8px;
+    font-size: 11px;
+  }
+}
