@@ -39,7 +39,7 @@ const Login = () => {
       if (user.role === "admin") {
         navigate("/admin");
       } else {
-        navigate("/dashboard");
+        navigate("/");
       }
     } catch (error) {
       setMessage(
@@ -86,7 +86,7 @@ const Login = () => {
             autoComplete="current-password"
             required
           />
-
+          
           {message && (
             <p className="login-message" role="alert">
               {message}
@@ -102,6 +102,9 @@ const Login = () => {
           Don't have an account?{" "}
           <Link to="/register">Register</Link>
         </p>
+        <Link to="/forgot-password" className="forgot-password-link">
+  Forgot Password?
+</Link>
       </div>
     </div>
   );

@@ -18,6 +18,22 @@ const API_URL = `${
   import.meta.env.VITE_API_URL || "http://localhost:5000"
 }/api/analysis/stats`;
 
+const Skeleton = ({ type = "value" }) => {
+  const skeletonClass = {
+    value: "dashboard-skeleton dashboard-skeleton--value",
+    chart: "dashboard-skeleton dashboard-skeleton--chart",
+    row: "dashboard-skeleton dashboard-skeleton--row",
+  }[type] || "dashboard-skeleton dashboard-skeleton--value";
+
+  return (
+    <span
+      className={skeletonClass}
+      role="status"
+      aria-label="Loading"
+    />
+  );
+};
+
 const Dashboard = () => {
   const [stats, setStats] = useState({
     totalAnalyses: 0,
@@ -104,17 +120,17 @@ const Dashboard = () => {
       <section className="cards">
         <div className="card">
           <h3>Total Analyses</h3>
-          <p>{loading ? "..." : stats.totalAnalyses}</p>
+          <p>{loading ?<Skeleton/>  : stats.totalAnalyses}</p>
         </div>
 
         <div className="card">
           <h3>Toxic Comments</h3>
-          <p>{loading ? "..." : stats.toxicComments}</p>
+          <p>{loading ?<Skeleton/> : stats.toxicComments}</p>
         </div>
 
         <div className="card">
           <h3>Safe Comments</h3>
-          <p>{loading ? "..." : stats.safeComments}</p>
+          <p>{loading ? <Skeleton/> : stats.safeComments}</p>
         </div>
       </section>
 
@@ -124,7 +140,7 @@ const Dashboard = () => {
 
         {loading ? (
           <div className="chart-placeholder">
-            Loading chart...
+           <Skeleton type="chart" />
           </div>
         ) : (
           <div className="chart-container">
@@ -167,7 +183,11 @@ const Dashboard = () => {
         <h3>Recent Analysis</h3>
 
         {loading ? (
-          <div className="chart-placeholder">Loading...</div>
+           <div className="dashboard-loading-rows" role="status" aria-label="Loading recent analyses">
+    {Array.from({ length: 4 }, (_, index) => (
+      <Skeleton key={index} type="row" />
+    ))}
+  </div>
         ) : stats.recentAnalyses.length === 0 ? (
           <div className="chart-placeholder">
             No analysis available
@@ -214,19 +234,19 @@ const Dashboard = () => {
         <div className="category-card">
           <span>☠️</span>
           <h4>Toxic</h4>
-          <p>{loading ? "..." : stats.categories.toxic}</p>
+          <p>{loading ? <Skeleton/> : stats.categories.toxic}</p>
         </div>
 
         <div className="category-card">
           <span>⚠️</span>
           <h4>Offensive</h4>
-          <p>{loading ? "..." : stats.categories.offensive}</p>
+          <p>{loading ? <Skeleton/> : stats.categories.offensive}</p>
         </div>
 
         <div className="category-card">
           <span>🚨</span>
           <h4>Threat</h4>
-          <p>{loading ? "..." : stats.categories.threat}</p>
+          <p>{loading ? <Skeleton/> : stats.categories.threat}</p>
         </div>
 
         <div className="category-card">

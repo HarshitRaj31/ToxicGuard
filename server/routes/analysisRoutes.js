@@ -367,15 +367,16 @@ router.get("/stats", protect, async (req, res) => {
       return totals;
     }, {});
 
-    const categories = {
-      toxic:
-        (categoryTotals.Toxic || 0) +
-        (categoryTotals["Custom Banned Word"] || 0),
-      offensive: categoryTotals.Offensive || 0,
-      threat: categoryTotals.Threat || 0,
-      insult: categoryTotals.Insult || 0,
-      hateSpeech: categoryTotals["Hate Speech"] || 0,
-    };
+    
+const categories = {
+  toxic: categoryTotals.Toxic || 0,
+  offensive: categoryTotals.Offensive || 0,
+  threat: categoryTotals.Threat || 0,
+  insult: categoryTotals.Insult || 0,
+  hateSpeech: categoryTotals["Hate Speech"] || 0,
+  customBannedWord: categoryTotals["Custom Banned Word"] || 0,
+};
+
 
     const dailyAnalyses = await Analysis.aggregate([
       { $match: match },

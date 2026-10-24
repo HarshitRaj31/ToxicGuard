@@ -235,22 +235,41 @@ const DetectionAnalytics = () => {
     { name: "Safe", value: safe },
   ];
 
-  const categoryCounts = stats?.categories || {};
+  
+const categoryCounts = stats?.categories || {};
+
+const getCategoryCount = (...keys) => {
+  for (const key of keys) {
+    const value = categoryCounts[key];
+
+    if (value !== undefined && value !== null && value !== "") {
+      const count = Number(value);
+      return Number.isFinite(count) ? count : 0;
+    }
+  }
+
+  return 0;
+};
 
 const categoryData = [
-  { category: "Toxic", count: Number(categoryCounts.Toxic) || 0 },
-  { category: "Offensive", count: Number(categoryCounts.Offensive) || 0 },
-  { category: "Threat", count: Number(categoryCounts.Threat) || 0 },
-  { category: "Insult", count: Number(categoryCounts.Insult) || 0 },
+  { category: "Toxic", count: getCategoryCount("Toxic", "toxic") },
+  { category: "Offensive", count: getCategoryCount("Offensive", "offensive") },
+  { category: "Threat", count: getCategoryCount("Threat", "threat") },
+  { category: "Insult", count: getCategoryCount("Insult", "insult") },
   {
     category: "Hate Speech",
-    count: Number(categoryCounts["Hate Speech"]) || 0,
+    count: getCategoryCount("Hate Speech", "hateSpeech", "hate_speech"),
   },
   {
     category: "Custom Banned Word",
-    count: Number(categoryCounts["Custom Banned Word"]) || 0,
+    count: getCategoryCount(
+      "Custom Banned Word",
+      "customBannedWord",
+      "custom_banned_word"
+    ),
   },
 ];
+
 
   const dailyAnalyses = Array.isArray(stats?.dailyAnalyses)
     ? stats.dailyAnalyses

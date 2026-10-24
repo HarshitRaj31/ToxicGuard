@@ -15,6 +15,9 @@ import AdminDashboard from "./pages/AdminDashboard";
 import ManagerUsers from "./pages/ManagerUsers";
 import ActivityLogs from "./pages/Activitylogs";
 import UserLayout from "./components/UserLayout";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
+import FaceEnrollment from "./components/FaceEnrollment";
 
 function App() {
   return (
@@ -23,13 +26,19 @@ function App() {
       <Route path="/" element={<Home />} />
       <Route path="/register" element={<Register />} />
       <Route path="/login" element={<Login />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
 
       {/* Pages for logged-in users */}
       <Route element={<ProtectedRoute />}>
-       <Route element={<UserLayout />}>
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/analyze" element={<Analysis />} />
-        <Route path="/history" element={<History />} />
+        <Route element={<UserLayout />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/analyze" element={<Analysis />} />
+          <Route path="/history" element={<History />} />
+          <Route
+            path="/face-enrollment"
+            element={<FaceEnrollment />}
+          />
         </Route>
       </Route>
 

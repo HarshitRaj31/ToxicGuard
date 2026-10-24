@@ -1,0 +1,235 @@
+
+/* ========================================
+   ToxicGuard — Global Application Styles
+   ======================================== */
+
+/* Keep sizing predictable across all pages */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+:root {
+  color-scheme: dark;
+  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+
+  --app-bg: #080d1b;
+  --app-surface: #10182e;
+  --app-surface-hover: #17223d;
+  --app-border: rgba(148, 163, 208, 0.17);
+
+  --app-text: #edf2ff;
+  --app-text-muted: #94a3c4;
+
+  --app-blue: #3b82f6;
+  --app-violet: #7c3aed;
+  --app-cyan: #22d3ee;
+
+  --app-radius-sm: 10px;
+  --app-radius-md: 14px;
+  --app-radius-lg: 20px;
+
+  --app-shadow:
+    0 18px 45px rgba(0, 0, 0, 0.16);
+
+  --app-transition: 180ms ease;
+}
+
+/* ===== Document ===== */
+
+html {
+  min-width: 320px;
+  min-height: 100%;
+  scroll-behavior: smooth;
+  scroll-padding-top: 100px;
+  background: var(--app-bg);
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+  background:
+    radial-gradient(
+      ellipse at 8% 0%,
+      rgba(37, 99, 235, 0.09),
+      transparent 36%
+    ),
+    radial-gradient(
+      ellipse at 95% 35%,
+      rgba(124, 58, 237, 0.07),
+      transparent 32%
+    ),
+    var(--app-bg);
+  color: var(--app-text);
+  font-size: 14px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body,
+button,
+input,
+textarea,
+select {
+  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+}
+
+#root {
+  min-height: 100vh;
+  isolation: isolate;
+}
+
+/* ===== Media and Elements ===== */
+
+img,
+svg,
+video,
+canvas {
+  max-width: 100%;
+}
+
+img,
+video {
+  height: auto;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button {
+  color: inherit;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+a {
+  color: #93c5fd;
+  text-underline-offset: 3px;
+}
+
+a:hover {
+  color: #c4b5fd;
+}
+
+::selection {
+  background: rgba(59, 130, 246, 0.35);
+  color: #ffffff;
+}
+
+/* ===== Accessible Keyboard Focus ===== */
+
+:focus-visible {
+  outline: 2px solid #60a5fa;
+  outline-offset: 3px;
+}
+
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline-offset: 1px;
+}
+
+/* ===== Shared Layout Helpers ===== */
+
+.user-layout {
+  min-height: 100vh;
+  width: 100%;
+}
+
+main {
+  min-width: 0;
+}
+
+section {
+  scroll-margin-top: 100px;
+}
+
+/* Prevent long text from breaking layouts */
+h1,
+h2,
+h3,
+h4,
+p {
+  overflow-wrap: anywhere;
+}
+
+table {
+  max-width: 100%;
+}
+
+pre,
+code {
+  overflow-wrap: anywhere;
+}
+
+/* ===== Consistent Scrollbars ===== */
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #35466c #0b1224;
+}
+
+::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0b1224;
+}
+
+::-webkit-scrollbar-thumb {
+  border: 2px solid #0b1224;
+  border-radius: 999px;
+  background: #35466c;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #50669b;
+}
+
+/* ===== Responsive ===== */
+
+@media (max-width: 768px) {
+  html {
+    scroll-padding-top: 85px;
+  }
+
+  section {
+    scroll-margin-top: 85px;
+  }
+
+  body {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  html,
+  body {
+    min-width: 320px;
+  }
+}
+
+/* Respect reduced-motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

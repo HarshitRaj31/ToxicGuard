@@ -1,4 +1,8 @@
 
+const crypto = require("crypto");
+const PasswordReset = require("../models/PasswordReset");
+const sendEmail = require("../utils/sendEmail");
+
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -205,6 +209,181 @@ router.post("/login", authLimiter, async (req, res) => {
 
     return res.status(500).json({
       message: "Unable to log in. Please try again.",
+    });
+  }
+});
+
+const otpLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    message: "Too many password reset attempts. Please try again later.",
+  },
+});
+
+// Request a password-reset OTP
+router.post("/forgot-password", otpLimiter, async (req, res) => {
+  try {
+    const email =
+      typeof req.body?.email === "string"
+        ? req.body.email.trim().toLowerCase()
+        : "";
+
+    if (!email || email.length > 254) {
+      return res.status(400).json({ message: "Please enter a valid email." });
+    }
+
+    const user = await User.findOne({ email });
+
+    // Use the same response whether the account exists or not.
+    const responseMessage =
+      "If an account exists for this email, an OTP will be sent.";
+
+    if (!user) {
+      return res.status(200).json({ message: responseMessage });
+    }
+
+    const otp = crypto.randomInt(100000, 1000000).toString();
+    const otpHash = crypto.createHash("sha256").update(otp).digest("hex");
+
+    await PasswordReset.deleteMany({ email });
+
+    await PasswordReset.create({
+      email,
+      otpHash,
+      expiresAt: new Date(Date.now() + 5 * 60 * 1000),
+      attempts: 0,
+    });
+
+    try {
+      await sendEmail({
+        to: email,
+        subject: "Your ToxicGuard password-reset OTP",
+        text: `Your ToxicGuard OTP is ${otp}. It expires in 5 minutes. If you did not request this, ignore this email.`,
+        html: `
+          <div style="font-family:Arial,sans-serif;max-width:480px;margin:auto;padding:24px">
+            <h2 style="color:#2563eb">ToxicGuard</h2>
+            <p>Use this one-time password to reset your password:</p>
+            <div style="font-size:32px;font-weight:bold;letter-spacing:8px;padding:16px;background:#f1f5f9;text-align:center">${otp}</div>
+            <p>This code expires in 5 minutes. Never share it with anyone.</p>
+          </div>
+        `,
+      });
+    } catch (emailError) {
+      await PasswordReset.deleteMany({ email });
+      throw emailError;
+    }
+
+    return res.status(200).json({ message: responseMessage });
+  } catch (error) {
+    console.error("Forgot-password error:", error.message);
+    return res.status(500).json({
+      message: "Unable to send the OTP right now. Please try again later.",
+    });
+  }
+});
+
+// Verify an OTP
+router.post("/verify-otp", otpLimiter, async (req, res) => {
+  try {
+    const email =
+      typeof req.body?.email === "string"
+        ? req.body.email.trim().toLowerCase()
+        : "";
+    const otp =
+      typeof req.body?.otp === "string" ? req.body.otp.trim() : "";
+
+    if (!email || !/^\d{6}$/.test(otp)) {
+      return res.status(400).json({ message: "Enter your email and six-digit OTP." });
+    }
+
+    const reset = await PasswordReset.findOne({ email });
+
+    if (!reset || reset.expiresAt <= new Date() || reset.attempts >= 5) {
+      return res.status(400).json({
+        message: "OTP is invalid or expired. Please request a new one.",
+      });
+    }
+
+    const otpHash = crypto.createHash("sha256").update(otp).digest("hex");
+
+    if (otpHash !== reset.otpHash) {
+      reset.attempts += 1;
+      await reset.save();
+
+      return res.status(400).json({
+        message: "OTP is invalid or expired. Please request a new one.",
+      });
+    }
+
+    return res.status(200).json({
+      message: "OTP verified. You can now reset your password.",
+    });
+  } catch (error) {
+    console.error("OTP verification error:", error.message);
+    return res.status(500).json({ message: "Unable to verify OTP." });
+  }
+});
+
+// Reset password after OTP verification
+router.post("/reset-password", otpLimiter, async (req, res) => {
+  try {
+    const email =
+      typeof req.body?.email === "string"
+        ? req.body.email.trim().toLowerCase()
+        : "";
+    const otp =
+      typeof req.body?.otp === "string" ? req.body.otp.trim() : "";
+    const password =
+      typeof req.body?.password === "string" ? req.body.password : "";
+
+    if (!email || !/^\d{6}$/.test(otp)) {
+      return res.status(400).json({ message: "Email and valid OTP are required." });
+    }
+
+    if (password.length < 8 || password.length > 128) {
+      return res.status(400).json({
+        message: "Password must be between 8 and 128 characters.",
+      });
+    }
+
+    const reset = await PasswordReset.findOne({ email });
+
+    if (!reset || reset.expiresAt <= new Date() || reset.attempts >= 5) {
+      return res.status(400).json({
+        message: "OTP is invalid or expired. Please request a new one.",
+      });
+    }
+
+    const otpHash = crypto.createHash("sha256").update(otp).digest("hex");
+
+    if (otpHash !== reset.otpHash) {
+      reset.attempts += 1;
+      await reset.save();
+
+      return res.status(400).json({
+        message: "OTP is invalid or expired. Please request a new one.",
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 12);
+
+    await User.updateOne(
+      { email },
+      { $set: { password: hashedPassword } }
+    );
+
+    await PasswordReset.deleteMany({ email });
+
+    return res.status(200).json({
+      message: "Password reset successful. Please log in with your new password.",
+    });
+  } catch (error) {
+    console.error("Password-reset error:", error.message);
+    return res.status(500).json({
+      message: "Unable to reset password. Please try again.",
     });
   }
 });

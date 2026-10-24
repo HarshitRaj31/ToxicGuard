@@ -13,7 +13,7 @@ const API_URL = "http://localhost:5000/api/auth";
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-
+ 
   // Restore login when the app starts or refreshes
   useEffect(() => {
     const checkSession = async () => {
