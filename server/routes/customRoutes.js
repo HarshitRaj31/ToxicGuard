@@ -1,4 +1,5 @@
 const express = require("express");
+const mongoose = require("mongoose");
 const CustomWord = require("../models/customWords");
 const { protect, adminOnly } = require("../middleware/authMiddleware");
 
@@ -64,17 +65,35 @@ router.post("/", protect, adminOnly, async (req, res) => {
 });
 
 // Delete a custom banned word — admin only
+
 router.delete("/:id", protect, adminOnly, async (req, res) => {
   try {
-    const deletedWord = await CustomWord.findByIdAndDelete(req.params.id);
-
-    if (!deletedWord) {
-      return res.status(404).json({ message: "Word not found" });
+    // Validate the ID before querying MongoDB
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({
+        message: "Invalid word ID.",
+      });
     }
 
-    res.json({ message: "Custom word deleted successfully" });
+    const deletedWord = await CustomWord.findByIdAndDelete(
+      req.params.id
+    );
+
+    if (!deletedWord) {
+      return res.status(404).json({
+        message: "Word not found.",
+      });
+    }
+
+    return res.status(200).json({
+      message: "Custom word deleted successfully.",
+    });
   } catch (error) {
-    res.status(500).json({ message: "Failed to delete custom word" });
+    console.error("Delete custom word error:", error.message);
+
+    return res.status(500).json({
+      message: "Failed to delete custom word.",
+    });
   }
 });
 

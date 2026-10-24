@@ -30,7 +30,9 @@ const protect = async (req, res, next) => {
       });
     }
 
-    const decoded = jwt.verify(token, secret);
+    const decoded = jwt.verify(token, secret, {
+  algorithms: ["HS256"],
+});
 
     if (!decoded.userId) {
       return res.status(401).json({

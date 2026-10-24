@@ -2,14 +2,27 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const rateLimit = require("express-rate-limit");
+
 const User = require("../models/user");
 const Activity = require("../models/Activity");
 const { protect } = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
+// Limit repeated registration and login requests
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  limit: 10,
+  standardHeaders: "draft-8",
+  legacyHeaders: false,
+  message: {
+    message: "Too many authentication attempts. Please try again later.",
+  },
+});
+
 // REGISTER — create a regular user account
-router.post("/register", async (req, res) => {
+router.post("/register", authLimiter, async (req, res) => {
   try {
     const { name, email, password } = req.body || {};
 
@@ -113,7 +126,7 @@ router.post("/register", async (req, res) => {
 });
 
 // LOGIN — authenticate an existing user
-router.post("/login", async (req, res) => {
+router.post("/login", authLimiter, async (req, res) => {
   try {
     const { email, password } = req.body || {};
 
@@ -155,7 +168,10 @@ router.post("/login", async (req, res) => {
     const token = jwt.sign(
       { userId: user._id.toString() },
       secret,
-      { expiresIn: "1d" }
+      {
+        expiresIn: "1d",
+        algorithm: "HS256",
+      }
     );
 
     try {

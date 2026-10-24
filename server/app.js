@@ -1,11 +1,13 @@
 const express=require("express");
 const cors=require("cors");
+const helmet = require("helmet");
 const customWordRoutes=require("./routes/customRoutes");
 const analysisRoutes=require("./routes/analysisRoutes");
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
 const activityRoutes = require("./routes/activityRoutes");
 const app=express();
+app.use(helmet());
 app.use(cors({
     origin: process.env.CLIENT_URL || "http://localhost:5173",
   }));
