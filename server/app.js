@@ -7,6 +7,7 @@ const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
 const activityRoutes = require("./routes/activityRoutes");
 const faceRoutes = require("./routes/faceRoutes");
+const passkeyRoutes = require("./routes/passkeyRoutes");
 const app=express();
 app.use(helmet());
 app.use(cors({
@@ -24,6 +25,7 @@ app.use("/api/analysis", analysisRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/activity", activityRoutes);
 app.use("/api/face", faceRoutes);
+app.use("/api/passkeys", passkeyRoutes);
 app.get("/test", (req, res) => {
   res.json({
     message: "Backend route is working"

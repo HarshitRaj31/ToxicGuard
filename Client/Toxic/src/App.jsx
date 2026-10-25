@@ -18,7 +18,9 @@ import UserLayout from "./components/UserLayout";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import FaceEnrollment from "./components/FaceEnrollment";
-
+import FaceLogin from "./pages/Face-Login";
+import PasskeySetup from "./pages/PasskeySetup";
+import PasskeySettings from "./pages/PasskeySettings";
 function App() {
   return (
     <Routes>
@@ -26,15 +28,29 @@ function App() {
       <Route path="/" element={<Home />} />
       <Route path="/register" element={<Register />} />
       <Route path="/login" element={<Login />} />
+      <Route path="/face-login" element={<FaceLogin />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
-
+   
       {/* Pages for logged-in users */}
       <Route element={<ProtectedRoute />}>
         <Route element={<UserLayout />}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/analyze" element={<Analysis />} />
           <Route path="/history" element={<History />} />
+             <Route
+  path="/passkey-setup"
+  element={
+    
+      <PasskeySetup />
+  
+  }
+/>
+<Route
+  path="/passkey-settings"
+  element={
+    
+      <PasskeySettings />}/>
           <Route
             path="/face-enrollment"
             element={<FaceEnrollment />}

@@ -1,7 +1,7 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
-
+import { Link } from "react-router-dom";
 import {
   BarChart,
   Bar,
@@ -111,6 +111,29 @@ const Dashboard = () => {
   return (
     <main className="dashboard">
       <h1 className="dashboard-overlay">Dashboard</h1>
+ 
+{/* Passkey Security */}
+<section className="passkey-dashboard-card">
+  <div className="passkey-dashboard-icon">🔐</div>
+
+  <div className="passkey-dashboard-content">
+    <h2>Passkey Security</h2>
+    <p>
+      Protect your ToxicGuard account with a passkey using
+      your device's fingerprint, face unlock, or PIN.
+    </p>
+
+    <div className="passkey-dashboard-actions">
+      <Link to="/passkey-setup" className="passkey-action-primary">
+        <span>＋</span> Register Passkey
+      </Link>
+
+      <Link to="/passkey-settings" className="passkey-action-secondary">
+        Manage Security Settings →
+      </Link>
+    </div>
+  </div>
+</section>
 
       {message && (
         <p className="dashboard-message">{message}</p>

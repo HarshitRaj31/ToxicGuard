@@ -357,3 +357,250 @@
     transition: none !important;
   }
 }
+/* ============ Passkey dashboard card ============ */
+
+.passkey-dashboard-card {
+  --pk-toxic: var(--toxic, #ff2e63);
+  --pk-accent: var(--accent, #8b5cf6);
+  --pk-cyan: var(--cyan, #22d3ee);
+  --pk-text: var(--text, #f4f1fb);
+  --pk-muted: var(--text-muted, #a79fbd);
+  --pk-border: var(--border, rgba(255, 255, 255, 0.12));
+  --pk-ease: var(--ease-out, cubic-bezier(0.22, 1, 0.36, 1));
+
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: clamp(1.1rem, 3vw, 1.75rem);
+  width: 100%;
+  padding: clamp(1.25rem, 3.5vw, 2rem);
+  color: var(--pk-text);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--pk-border);
+  border-radius: 24px;
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  box-shadow:
+    0 16px 48px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  animation: pk-rise 0.7s var(--pk-ease) both;
+  transition:
+    transform 0.35s var(--pk-ease),
+    border-color 0.35s var(--pk-ease),
+    box-shadow 0.35s var(--pk-ease);
+}
+
+.passkey-dashboard-card *,
+.passkey-dashboard-card *::before,
+.passkey-dashboard-card *::after {
+  box-sizing: border-box;
+}
+
+/* glow blob in the corner */
+.passkey-dashboard-card::before {
+  content: '';
+  position: absolute;
+  top: -120px;
+  right: -80px;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.35), transparent 70%);
+  pointer-events: none;
+  transition: transform 0.6s var(--pk-ease);
+}
+
+/* accent bar on the left edge */
+.passkey-dashboard-card::after {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: linear-gradient(180deg, var(--pk-accent), var(--pk-cyan));
+}
+
+.passkey-dashboard-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(139, 92, 246, 0.45);
+  box-shadow:
+    0 24px 60px rgba(139, 92, 246, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.09);
+}
+.passkey-dashboard-card:hover::before {
+  transform: scale(1.25);
+}
+
+/* ---------- Icon ---------- */
+.passkey-dashboard-icon {
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: clamp(60px, 9vw, 80px);
+  height: clamp(60px, 9vw, 80px);
+  font-size: clamp(1.8rem, 4.5vw, 2.4rem);
+  border-radius: 22px;
+  background: linear-gradient(145deg, rgba(139, 92, 246, 0.3), rgba(34, 211, 238, 0.18));
+  border: 1px solid rgba(139, 92, 246, 0.4);
+  box-shadow: 0 0 34px rgba(139, 92, 246, 0.4);
+  animation: pk-pulse 3.5s ease-in-out infinite;
+}
+
+/* ---------- Content ---------- */
+.passkey-dashboard-content {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+  flex: 1;
+}
+
+.passkey-dashboard-content h2 {
+  margin: 0 0 0.4rem;
+  font-size: clamp(1.25rem, 3vw, 1.6rem);
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  background: linear-gradient(100deg, var(--pk-text), #d9ccff 60%, var(--pk-cyan));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.passkey-dashboard-content p {
+  margin: 0 0 1.25rem;
+  max-width: 56ch;
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: var(--pk-muted);
+}
+
+/* ---------- Actions ---------- */
+.passkey-dashboard-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.25rem;
+}
+
+.passkey-action-primary,
+.passkey-action-secondary {
+  text-decoration: none;
+  font-weight: 700;
+  transition:
+    transform 0.3s var(--pk-ease),
+    box-shadow 0.3s var(--pk-ease),
+    color 0.3s var(--pk-ease),
+    background 0.3s var(--pk-ease),
+    border-color 0.3s var(--pk-ease);
+}
+
+.passkey-action-primary {
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1.5rem;
+  font-size: 0.95rem;
+  color: #fff;
+  border-radius: 999px;
+  background: linear-gradient(120deg, var(--pk-toxic), #c026d3);
+  box-shadow: 0 10px 28px rgba(255, 46, 99, 0.4);
+}
+
+.passkey-action-primary span {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  font-size: 1rem;
+  line-height: 1;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.22);
+  transition: transform 0.4s var(--pk-ease);
+}
+
+/* shine sweep */
+.passkey-action-primary::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+  transform: skewX(-20deg);
+  transition: left 0.6s var(--pk-ease);
+}
+
+.passkey-action-primary:hover {
+  color: #fff;
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 14px 36px rgba(255, 46, 99, 0.55);
+}
+.passkey-action-primary:hover::after {
+  left: 140%;
+}
+.passkey-action-primary:hover span {
+  transform: rotate(90deg);
+}
+.passkey-action-primary:active {
+  transform: scale(0.96);
+}
+
+.passkey-action-secondary {
+  font-size: 0.92rem;
+  color: var(--pk-cyan);
+}
+.passkey-action-secondary:hover {
+  color: #c4b5fd;
+  transform: translateX(4px);
+}
+
+.passkey-dashboard-card :focus-visible {
+  outline: 2px solid var(--pk-cyan);
+  outline-offset: 3px;
+  border-radius: 10px;
+}
+
+/* ---------- Animations ---------- */
+@keyframes pk-rise {
+  from { opacity: 0; transform: translateY(24px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes pk-pulse {
+  50% { box-shadow: 0 0 52px rgba(139, 92, 246, 0.65); }
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 600px) {
+  .passkey-dashboard-card {
+    flex-direction: column;
+    align-items: flex-start;
+    border-radius: 20px;
+  }
+  .passkey-dashboard-actions {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+  }
+  .passkey-action-primary {
+    justify-content: center;
+  }
+  .passkey-action-secondary {
+    text-align: center;
+  }
+  .passkey-action-secondary:hover {
+    transform: none;
+  }
+}
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .passkey-dashboard-card,
+  .passkey-dashboard-card *,
+  .passkey-dashboard-card::before {
+    animation: none !important;
+    transition: none !important;
+  }
+}

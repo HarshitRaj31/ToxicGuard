@@ -104,26 +104,59 @@ async function checkEnrollmentStatus() {
     setStatus("Unable to check saved face enrollment.");
   }
 }
-  async function startCamera() {
-    try {
-      setStatus("Requesting camera permission...");
+  
+async function startCamera() {
+  if (!navigator.mediaDevices?.getUserMedia) {
+    setStatus(
+      "Camera is unavailable. Use localhost or HTTPS and a supported browser."
+    );
+    return;
+  }
 
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "user" },
-        audio: false,
-      });
+  if (!videoRef.current) {
+    setStatus("Camera preview is not ready. Please refresh and try again.");
+    return;
+  }
 
-      streamRef.current = stream;
-      videoRef.current.srcObject = stream;
-      await videoRef.current.play();
+  try {
+    setStatus("Requesting camera permission...");
 
-      setCameraReady(true);
-      setStatus("Camera ready. Position your face in the frame.");
-    } catch (error) {
-      console.error("Camera access failed:", error);
-      setStatus("Camera access failed. Allow camera permission and try again.");
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: "user" },
+      audio: false,
+    });
+
+    streamRef.current = stream;
+    videoRef.current.srcObject = stream;
+
+    await videoRef.current.play();
+
+    setCameraReady(true);
+    setStatus("Camera ready. Position your face in the frame.");
+  } catch (error) {
+    // Release any stream if startup fails partway through.
+    streamRef.current?.getTracks().forEach((track) => track.stop());
+    streamRef.current = null;
+
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
+    }
+
+    setCameraReady(false);
+    console.error("Camera access failed:", error);
+
+    if (error.name === "NotAllowedError") {
+      setStatus("Camera permission denied. Allow camera access in your browser settings.");
+    } else if (error.name === "NotFoundError") {
+      setStatus("No camera was found on this device.");
+    } else if (error.name === "NotReadableError") {
+      setStatus("The camera may be in use by another application. Close it and try again.");
+    } else {
+      setStatus("Could not start the camera. Check permissions and try again.");
     }
   }
+}
+
 
   async function enrollFace() {
     if (!videoRef.current || !modelReady || !cameraReady) return;
@@ -409,10 +442,21 @@ async function deleteSavedEnrollment() {
   Verify Face
 </button>
 <button
+  type="button"
   onClick={saveEnrollment}
   disabled={!descriptor || !consent || saving}
 >
-  {saving ? "Saving..." : "Save Enrollment"}
+  {saving ? (
+    <>
+      <span
+        className="face-enrollment__spinner"
+        aria-hidden="true"
+      />
+      Saving enrollment...
+    </>
+  ) : (
+    "Save Enrollment"
+  )}
 </button>
 <button
   type="button"

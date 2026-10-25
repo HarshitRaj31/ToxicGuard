@@ -13,7 +13,10 @@ const Activity = require("../models/Activity");
 const { protect } = require("../middleware/authMiddleware");
 
 const router = express.Router();
-
+const FaceEnrollment = require("../models/FaceEnrollment");
+const {
+  decryptDescriptor,
+} = require("../utils/faceEncryption");
 // Limit repeated registration and login requests
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -22,6 +25,16 @@ const authLimiter = rateLimit({
   legacyHeaders: false,
   message: {
     message: "Too many authentication attempts. Please try again later.",
+  },
+});
+
+const faceLoginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    message: "Too many face login attempts. Please try again later.",
   },
 });
 
@@ -156,6 +169,47 @@ router.post("/login", authLimiter, async (req, res) => {
     if (!user || !(await bcrypt.compare(password, user.password))) {
       return res.status(401).json({
         message: "Invalid email or password.",
+      });
+    }
+
+    // Require a passkey for accounts that have enabled two-factor login.
+    if (user.faceVerificationEnabled) {
+      const hasPasskey = await require("../models/Passkey").exists({
+        user: user._id,
+      });
+
+      if (!hasPasskey) {
+        return res.status(403).json({
+          message:
+            "Two-factor login is enabled, but no passkey is registered. Contact support to recover access.",
+        });
+      }
+
+      const secret = process.env.JWT_SECRET;
+
+      if (!secret) {
+        return res.status(500).json({
+          message: "Authentication is not configured.",
+        });
+      }
+
+      const preAuthToken = jwt.sign(
+        {
+          userId: user._id.toString(),
+          purpose: "passkey-login",
+              jti: crypto.randomUUID(),
+        },
+        secret,
+        {
+          expiresIn: "5m",
+          algorithm: "HS256",
+        }
+      );
+
+      return res.status(200).json({
+        requiresPasskey: true,
+        preAuthToken,
+        message: "Password verified. Passkey verification required.",
       });
     }
 

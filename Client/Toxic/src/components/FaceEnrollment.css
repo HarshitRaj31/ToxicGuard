@@ -335,3 +335,11 @@
     transition: none !important;
   }
 }
+.face-enrollment__actions button .face-enrollment__spinner {
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  margin-right: 8px;
+  vertical-align: -3px;
+  border-width: 2px;
+}

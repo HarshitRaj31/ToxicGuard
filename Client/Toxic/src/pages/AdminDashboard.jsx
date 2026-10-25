@@ -244,6 +244,14 @@ const [statsResponse, wordsResponse] = await Promise.all([
             Open Analyzer →
           </button>
         </article>
+          <article className="admin-stat-card">
+          <span>📊</span>
+          <h3>Face Enrollment Settings</h3>
+          <p>Update Your Face Rognition.</p>
+          <button onClick={() => navigate("/face-enrollment")}>
+            Open Enrollment →
+          </button>
+        </article>
       </section>
 
       <section className="admin-notice">

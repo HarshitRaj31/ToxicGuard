@@ -384,3 +384,286 @@
     transition: none;
   }
 }
+.login-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0;
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+.login-divider::before,
+.login-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: rgba(148, 163, 184, 0.25);
+}
+
+.face-login-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 16px;
+  border: 1px solid rgba(99, 102, 241, 0.55);
+  border-radius: 10px;
+  color: inherit;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.face-login-button:hover {
+  background: rgba(99, 102, 241, 0.12);
+  border-color: #818cf8;
+}
+/* ===== Passkey Settings (reuses login-card, no <form>) ===== */
+
+/* body copy inside the card */
+.login-card > p:not(.login-subtitle):not(.login-message) {
+  margin: 0 0 16px;
+  font-size: 14px;
+  line-height: 1.7;
+  text-align: center;
+  color: var(--text-muted, #a79fbd);
+}
+
+/* status line: <p>Status: <strong>…</strong></p> */
+.login-card > p:has(> strong) {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  margin-bottom: 18px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-align: left;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+}
+
+.login-card > p > strong {
+  padding: 4px 14px;
+  font-size: 13px;
+  letter-spacing: 0.03em;
+  text-transform: none;
+  color: #ff8aa6;
+  background: rgba(255, 46, 99, 0.12);
+  border: 1px solid rgba(255, 46, 99, 0.4);
+  border-radius: 999px;
+}
+
+/* optional state classes (see JSX tweak below) */
+.login-card > p > strong.status-on {
+  color: var(--safe, #34d399);
+  background: rgba(52, 211, 153, 0.12);
+  border-color: rgba(52, 211, 153, 0.4);
+}
+
+/* status / error messages: add spacing and success tone when it's not an error */
+.login-card > .login-message {
+  margin: 0 0 18px;
+}
+
+/* main button (no form wrapper on this page) */
+.login-card > button {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  width: 100%;
+  min-height: 52px;
+  align-items: center;
+  justify-content: center;
+  margin: 4px 0 8px;
+  padding: 13px 16px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: #fff;
+  cursor: pointer;
+  border: 0;
+  border-radius: 14px;
+  background: linear-gradient(120deg, var(--toxic, #ff2e63), #c026d3 55%, var(--accent, #8b5cf6));
+  background-size: 160% 100%;
+  box-shadow: 0 10px 28px rgba(255, 46, 99, 0.4);
+  transition:
+    transform 300ms var(--ease-out, ease),
+    box-shadow 300ms var(--ease-out, ease),
+    background-position 500ms var(--ease-out, ease),
+    opacity 300ms var(--ease-out, ease);
+}
+
+.login-card > button::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+  transform: skewX(-20deg);
+  transition: left 600ms var(--ease-out, ease);
+}
+
+.login-card > button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  background-position: 100% 0;
+  box-shadow: 0 14px 36px rgba(255, 46, 99, 0.55);
+}
+.login-card > button:hover:not(:disabled)::after {
+  left: 140%;
+}
+.login-card > button:active:not(:disabled) {
+  transform: scale(0.97);
+}
+.login-card > button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+  animation: login-blink 1.3s ease-in-out infinite;
+}
+
+/* optional: calmer "Enable" button (see JSX tweak below) */
+.login-card > button.is-enable {
+  background: linear-gradient(120deg, var(--accent, #8b5cf6), #6366f1);
+  box-shadow: 0 10px 28px rgba(139, 92, 246, 0.4);
+}
+
+/* links inside the card */
+.login-card > p a {
+  font-weight: 700;
+  color: var(--cyan, #22d3ee);
+  transition: color 250ms var(--ease-out, ease);
+}
+.login-card > p a:hover {
+  color: #c4b5fd;
+  text-decoration: underline;
+}
+
+/* "Back to Home" footer row */
+.login-card > p:last-child {
+  margin: 8px 0 0;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+/* ===== Passkey Setup additions ===== */
+
+/* success state for the shared message box */
+.login-message.success {
+  color: #9bf0cf;
+  background: rgba(52, 211, 153, 0.12);
+  border-color: rgba(52, 211, 153, 0.4);
+  animation: login-pop 450ms var(--ease-out, ease) both;
+}
+
+/* subtitle used as a footer note under the button */
+.login-card > button + .login-subtitle {
+  margin: 18px 0 0;
+  padding-top: 18px;
+  font-size: 13px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* spacing between the message and the button */
+.login-card > .login-message + button {
+  margin-top: 6px;
+}
+
+@keyframes login-pop {
+  from { opacity: 0; transform: translateY(8px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.passkey-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0;
+  color: #888;
+  font-size: 13px;
+}
+
+.passkey-divider::before,
+.passkey-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: #ddd;
+}
+
+.passkey-login-button {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  background: #fff;
+  color: #172033;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.passkey-login-button:hover:not(:disabled) {
+  background: #f1f5f9;
+  border-color: #64748b;
+}
+
+.passkey-login-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.login-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin: 8px 0 16px;
+}
+
+.passkey-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0;
+  color: #999;
+  font-size: 13px;
+}
+
+.passkey-divider::before,
+.passkey-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: #ddd;
+}
+
+.passkey-login-button {
+  width: 100%;
+  padding: 12px 16px;
+  margin-bottom: 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  background: #fff;
+  color: #172033;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.passkey-login-button:hover:not(:disabled) {
+  background: #f1f5f9;
+  border-color: #64748b;
+}
+
+.passkey-login-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
