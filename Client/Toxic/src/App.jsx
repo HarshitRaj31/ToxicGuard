@@ -13,7 +13,7 @@ import History from "./pages/History";
 import Custom from "./pages/Custom";
 import AdminDashboard from "./pages/AdminDashboard";
 import ManagerUsers from "./pages/ManagerUsers";
-import ActivityLogs from "./pages/Activitylogs";
+import ActivityLogs from "./pages/ActivityLogs";
 import UserLayout from "./components/UserLayout";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
