@@ -3,9 +3,8 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import "./ActivityLogs.css";
 import Navbar from "../components/Navbar";
-
-const API_URL = "http://localhost:5000/api/activity";
-
+import API_BASE_URL from "../api";
+const API_URL = `${API_BASE_URL}/activity`;
 function ActivityLogs() {
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);

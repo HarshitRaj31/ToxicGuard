@@ -1,11 +1,9 @@
-
+import API_BASE_URL from "../api";
 import { useState } from "react";
 import axios from "axios";
 import "./Analysis.css";
 
-const API_URL = `${
-  import.meta.env.VITE_API_URL || "http://localhost:5000"
-}/api/analysis`;
+const API_URL = `${API_BASE_URL}/analysis`;
 
 const Analysis = () => {
   const [comment, setComment] = useState("");

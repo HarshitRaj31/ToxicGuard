@@ -2,8 +2,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./ManagerUser.css";
-
-const API_URL = "http://localhost:5000/api/users";
+import API_BASE_URL from "../api";
+const API_URL = `${API_BASE_URL}/users`;
 
 const ManagerUsers = () => {
   const [users, setUsers] = useState([]);

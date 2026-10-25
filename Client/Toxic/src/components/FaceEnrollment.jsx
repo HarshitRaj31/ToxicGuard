@@ -1,6 +1,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import * as faceapi from "@vladmandic/face-api";
+import API_BASE_URL from "../api";
 import "./FaceEnrollment.css"
 
 const MODEL_URL = "/models";
@@ -82,7 +83,7 @@ async function checkEnrollmentStatus() {
 
   try {
     const response = await fetch(
-      "http://localhost:5000/api/face/status",
+      `${API_BASE_URL}/face/status`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -221,7 +222,7 @@ async function verifyFace() {
       return;
     }
 
-    const response = await fetch("http://localhost:5000/api/face/verify", {
+    const response = await fetch(`${API_BASE_URL}/face/verify`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -270,7 +271,7 @@ async function saveEnrollment() {
     setSaving(true);
     setStatus("Encrypting and saving your face template...");
 
-    const response = await fetch("http://localhost:5000/api/face/enroll", {
+    const response = await fetch(`${API_BASE_URL}/face/enroll`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -316,8 +317,7 @@ async function deleteSavedEnrollment() {
     setDeleting(true);
 
     const response = await fetch(
-      "http://localhost:5000/api/face/enroll",
-      {
+`${API_BASE_URL}/face/enroll`,{
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,

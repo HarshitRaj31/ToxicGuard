@@ -2,10 +2,8 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import "./History.css";
-
-const API_URL = `${
-  import.meta.env.VITE_API_URL || "http://localhost:5000"
-}/api/analysis`;
+import API_BASE_URL from "../api";
+const API_URL = `${API_BASE_URL}/activity`;
 
 const History = () => {
   const [search, setSearch] = useState("");

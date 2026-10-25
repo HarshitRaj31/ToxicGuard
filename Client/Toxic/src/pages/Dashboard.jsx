@@ -1,4 +1,4 @@
-
+import API_BASE_URL from "../api";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
@@ -14,9 +14,7 @@ import {
 
 import "./Dashboard.css";
 
-const API_URL = `${
-  import.meta.env.VITE_API_URL || "http://localhost:5000"
-}/api/analysis/stats`;
+const API_URL = `${API_BASE_URL}/analysis/stats`;
 
 const Skeleton = ({ type = "value" }) => {
   const skeletonClass = {

@@ -1,7 +1,8 @@
 import React, { useState,useEffect } from 'react'
 import axios from "axios";
 import './Custom.css'
-const API_URL = "http://localhost:5000/api/custom-words";
+import API_BASE_URL from "../api";
+const API_URL = `${API_BASE_URL}/custom-words`;
 const Custom = () => {
     
     const [word,setWord]=useState("");

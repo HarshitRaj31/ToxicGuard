@@ -6,6 +6,7 @@ import { useAuth } from "./AuthContext";
 import "./AdminDashboard.css";
 import DetectionAnalytics from "./DetectionAnalytics";
 import Navbar from "../components/Navbar";
+import API_BASE_URL from "../api";
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
@@ -28,14 +29,13 @@ const AdminDashboard = () => {
 };
 
 const [statsResponse, wordsResponse] = await Promise.all([
-  axios.get("http://localhost:5000/api/analysis/stats", {
+  axios.get(`${API_BASE_URL}/analysis/stats`, {
     headers,
   }),
-  axios.get("http://localhost:5000/api/custom-words", {
+  axios.get(`${API_BASE_URL}/custom-words`, {
     headers,
   }),
 ]);
-
         setStats(statsResponse.data);
 
         const words = wordsResponse.data;
