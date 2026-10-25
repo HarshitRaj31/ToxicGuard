@@ -52,12 +52,18 @@ if (comment.trim().length > 5000) {
     } else {
 
       // Send comment to Python AI model
-      const aiResponse = await axios.post(
-        "http://localhost:8000/predict",
-        {
-          text: comment.trim(),
-        }
-      );
+      const AI_SERVICE_URL =
+  process.env.AI_SERVICE_URL || "http://127.0.0.1:8000";
+
+const aiResponse = await axios.post(
+  `${AI_SERVICE_URL}/predict`,
+  {
+    text: comment.trim(),
+  },
+  {
+    timeout: 30000,
+  }
+);
 
       result = aiResponse.data.result;
       confidence = aiResponse.data.confidence;
