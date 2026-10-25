@@ -9,10 +9,12 @@ import axios from "axios";
 import { startAuthentication } from "@simplewebauthn/browser";
 
 const AuthContext = createContext(null);
+const API_BASE_URL =
+  import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
-const API_URL = "http://localhost:5000/api/auth";
-const PASSKEY_API_URL = "http://localhost:5000/api/passkeys";
-const FACE_API_URL = "http://localhost:5000/api/face";
+const API_URL = `${API_BASE_URL}/auth`;
+const PASSKEY_API_URL = `${API_BASE_URL}/passkeys`;
+const FACE_API_URL = `${API_BASE_URL}/face`;
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
