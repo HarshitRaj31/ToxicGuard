@@ -32,4 +32,6 @@ const webAuthnChallengeSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("WebAuthnChallenge", webAuthnChallengeSchema);
+const { createModel } = require("../utils/memoryStore");
+
+module.exports = createModel("WebAuthnChallenge", webAuthnChallengeSchema);

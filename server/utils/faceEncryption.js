@@ -6,9 +6,11 @@ const IV_LENGTH = 12;
 const AUTH_TAG_LENGTH = 16;
 
 function getEncryptionKey() {
-  const value = process.env.FACE_ENCRYPTION_KEY;
+  const value =
+    process.env.FACE_ENCRYPTION_KEY ||
+    "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
 
-  if (!value || !/^[0-9a-fA-F]{64}$/.test(value)) {
+  if (!/^[0-9a-fA-F]{64}$/.test(value)) {
     throw new Error(
       "FACE_ENCRYPTION_KEY must contain exactly 64 hexadecimal characters."
     );

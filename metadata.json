@@ -1,0 +1,8 @@
+{
+  "name": "ToxicGuard — AI Toxic Speech Detection Platform",
+  "description": "AI-powered toxic and hate speech detection platform with real-time comment analysis, custom banned words, analytics dashboard, passkey 2FA, and admin controls.",
+  "requestFramePermissions": [
+    "camera"
+  ],
+  "majorCapabilities": []
+}

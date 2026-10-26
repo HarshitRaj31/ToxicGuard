@@ -38,4 +38,6 @@ const analysisSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("Analysis", analysisSchema);
+const { createModel } = require("../utils/memoryStore");
+
+module.exports = createModel("Analysis", analysisSchema);

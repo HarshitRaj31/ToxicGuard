@@ -42,4 +42,6 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("User", userSchema);
+const { createModel } = require("../utils/memoryStore");
+
+module.exports = createModel("User", userSchema);

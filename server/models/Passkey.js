@@ -46,4 +46,6 @@ const passkeySchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Passkey", passkeySchema);
+const { createModel } = require("../utils/memoryStore");
+
+module.exports = createModel("Passkey", passkeySchema);

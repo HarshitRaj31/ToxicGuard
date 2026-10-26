@@ -1,6 +1,9 @@
-
 {
   "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "https://toxicguard-api-k87a.onrender.com/api/$1"
+    },
     {
       "source": "/(.*)",
       "destination": "/"

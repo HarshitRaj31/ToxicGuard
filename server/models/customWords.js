@@ -13,4 +13,5 @@ const customWordSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
-module.exports = mongoose.model("CustomWord", customWordSchema);
+const { createModel } = require("../utils/memoryStore");
+module.exports = createModel("CustomWord", customWordSchema);

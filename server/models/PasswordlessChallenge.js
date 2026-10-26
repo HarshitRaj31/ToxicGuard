@@ -21,7 +21,9 @@ const passwordlessChallengeSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model(
+const { createModel } = require("../utils/memoryStore");
+
+module.exports = createModel(
   "PasswordlessChallenge",
   passwordlessChallengeSchema
 );

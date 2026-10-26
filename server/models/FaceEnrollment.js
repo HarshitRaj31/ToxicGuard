@@ -39,4 +39,6 @@ const faceEnrollmentSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("FaceEnrollment", faceEnrollmentSchema);
+const { createModel } = require("../utils/memoryStore");
+
+module.exports = createModel("FaceEnrollment", faceEnrollmentSchema);

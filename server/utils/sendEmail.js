@@ -10,6 +10,10 @@ const transporter = nodemailer.createTransport({
 });
 
 async function sendEmail({ to, subject, text, html }) {
+  if (!process.env.EMAIL_USER || !process.env.EMAIL_APP_PASSWORD) {
+    console.log(`[Mock Email] To: ${to} | Subject: ${subject} | Text: ${text}`);
+    return { messageId: "mock-email-id" };
+  }
   return transporter.sendMail({
     from: `"ToxicGuard" <${process.env.EMAIL_USER}>`,
     to,

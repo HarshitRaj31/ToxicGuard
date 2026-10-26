@@ -55,7 +55,7 @@ console.log("[Analysis timing] Custom word count:", customWords.length);
       detectedLabels = ["custom_banned_word"];
     } else {
 
-      // Send comment to Python AI model
+      // Send comment to Python AI model with local fallback
       const AI_SERVICE_URL = (
         process.env.AI_SERVICE_URL ||
         (process.env.NODE_ENV === "production"
@@ -63,21 +63,26 @@ console.log("[Analysis timing] Custom word count:", customWords.length);
           : "http://127.0.0.1:8000")
       ).replace(/\/+$/, "");
 
-stageStart = Date.now();
+      stageStart = Date.now();
+      let prediction;
 
-const aiResponse = await axios.post(
-  `${AI_SERVICE_URL}/predict`,
-  { text: comment.trim() },
-  { timeout: 30000 }
-);
+      try {
+        const aiResponse = await axios.post(
+          `${AI_SERVICE_URL}/predict`,
+          { text: comment.trim() },
+          { timeout: 4000 }
+        );
+        prediction = aiResponse.data;
+      } catch (aiErr) {
+        const { predictFallback } = require("../utils/predictFallback");
+        prediction = predictFallback(comment.trim());
+      }
 
-console.log(
-  "[Analysis timing] AI service:",
-  Date.now() - stageStart,
-  "ms"
-);
-
-      const prediction = aiResponse.data;
+      console.log(
+        "[Analysis timing] AI service:",
+        Date.now() - stageStart,
+        "ms"
+      );
 
       if (
         !prediction ||

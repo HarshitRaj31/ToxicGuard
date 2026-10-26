@@ -27,4 +27,6 @@ const passwordResetSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("PasswordReset", passwordResetSchema);
+const { createModel } = require("../utils/memoryStore");
+
+module.exports = createModel("PasswordReset", passwordResetSchema);

@@ -32,4 +32,6 @@ const activitySchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Activity", activitySchema);
+const { createModel } = require("../utils/memoryStore");
+
+module.exports = createModel("Activity", activitySchema);

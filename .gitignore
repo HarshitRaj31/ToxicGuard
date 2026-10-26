@@ -3,11 +3,22 @@
 .env.*
 !.env.example
 
+# AI Studio artifacts & lockfiles
+.aistudio/
+bun.lock
+bun.lockb
+
 # Dependencies
 node_modules/
+Client/Toxic/node_modules/
+server/node_modules/
 
 # Build output
 dist/
+Client/Toxic/dist/
+
+# Redundant archives
+server.zip
 
 # Python cache
 __pycache__/
