@@ -29,11 +29,7 @@ if (comment.trim().length > 5000) {
 
 const customWords = await CustomWord.find();
 
-console.log(
-  "[Analysis timing] Custom words:",
-  Date.now() - stageStart,
-  "ms"
-);
+console.log("[Analysis timing] Custom word count:", customWords.length);
 
     const matchedWord = customWords.find((item) => {
   const word = item.word?.trim().toLowerCase();
