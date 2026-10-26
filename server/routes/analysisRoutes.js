@@ -99,7 +99,12 @@ const analysis = await Analysis.create({
   confidence,
   detectedLabels,
 });
-
+console.log(
+  "[Analysis saved]",
+  analysis._id.toString(),
+  "User:",
+  analysis.user?.toString()
+);
 console.log(
   "[Analysis timing] Database save:",
   Date.now() - stageStart,
