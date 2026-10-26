@@ -57,7 +57,10 @@ console.log("[Analysis timing] Custom word count:", customWords.length);
 
       // Send comment to Python AI model
       const AI_SERVICE_URL = (
-        process.env.AI_SERVICE_URL || "http://127.0.0.1:8000"
+        process.env.AI_SERVICE_URL ||
+        (process.env.NODE_ENV === "production"
+          ? "https://toxicguard-ai-k87a.onrender.com"
+          : "http://127.0.0.1:8000")
       ).replace(/\/+$/, "");
 
 stageStart = Date.now();
