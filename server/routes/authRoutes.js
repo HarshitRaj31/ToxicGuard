@@ -232,19 +232,21 @@ router.post("/login", authLimiter, async (req, res) => {
       }
     );
 
-    Activity.create({
-  user: user._id,
-  userName: user.name,
-  userEmail: user.email,
-  action: "LOGIN",
-  details: "User logged in successfully",
-  ipAddress: req.ip,
-}).catch((activityError) => {
-  console.error(
-    "Login activity logging failed:",
-    activityError.message
-  );
-});
+    try {
+      await Activity.create({
+        user: user._id,
+        userName: user.name,
+        userEmail: user.email,
+        action: "LOGIN",
+        details: "User logged in successfully",
+        ipAddress: req.ip,
+      });
+    } catch (activityError) {
+      console.error(
+        "Login activity logging failed:",
+        activityError.message
+      );
+    }
 
     return res.status(200).json({
       message: "Login successful",
