@@ -25,7 +25,15 @@ if (comment.trim().length > 5000) {
     const text = comment.trim().toLowerCase();
 
     // Get custom words
-    const customWords = await CustomWord.find();
+   let stageStart = Date.now();
+
+const customWords = await CustomWord.find();
+
+console.log(
+  "[Analysis timing] Custom words:",
+  Date.now() - stageStart,
+  "ms"
+);
 
     const matchedWord = customWords.find((item) => {
   const word = item.word?.trim().toLowerCase();
@@ -55,14 +63,18 @@ if (comment.trim().length > 5000) {
       const AI_SERVICE_URL =
   process.env.AI_SERVICE_URL || "http://127.0.0.1:8000";
 
+stageStart = Date.now();
+
 const aiResponse = await axios.post(
   `${AI_SERVICE_URL}/predict`,
-  {
-    text: comment.trim(),
-  },
-  {
-    timeout: 30000,
-  }
+  { text: comment.trim() },
+  { timeout: 30000 }
+);
+
+console.log(
+  "[Analysis timing] AI service:",
+  Date.now() - stageStart,
+  "ms"
 );
 
       result = aiResponse.data.result;
@@ -81,14 +93,22 @@ const aiResponse = await axios.post(
     }
 
     // Save result to MongoDB
-    const analysis = await Analysis.create({
-      user: req.user._id,
-      comment: comment.trim(),
-      result,
-      category,
-      confidence,
-      detectedLabels,
-    });
+  stageStart = Date.now();
+
+const analysis = await Analysis.create({
+  user: req.user._id,
+  comment: comment.trim(),
+  result,
+  category,
+  confidence,
+  detectedLabels,
+});
+
+console.log(
+  "[Analysis timing] Database save:",
+  Date.now() - stageStart,
+  "ms"
+);
     try {
   await Activity.create({
     user: req.user._id,
