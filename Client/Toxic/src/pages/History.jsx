@@ -3,8 +3,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import "./History.css";
 import API_BASE_URL from "../api";
-const API_URL = `${API_BASE_URL}/activity`;
-
+const API_URL = `${API_BASE_URL}/analysis`;
 const History = () => {
   const [search, setSearch] = useState("");
   const [history, setHistory] = useState([]);
