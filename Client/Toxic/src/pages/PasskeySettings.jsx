@@ -3,9 +3,8 @@ import React, { useState,useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import "./Login.css";
-
-const API_URL = "http://localhost:5000/api/passkeys";
-
+import API_BASE_URL from "../api";
+const API_URL = `${API_BASE_URL}/passkeys`;
 const PasskeySettings = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");

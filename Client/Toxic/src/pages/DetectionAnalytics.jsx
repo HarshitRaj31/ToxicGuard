@@ -19,10 +19,9 @@ import {
   Line,
 } from "recharts";
 import "./DetectionAnalytics.css";
-
-const API_URL = "http://localhost:5000/api/analysis/stats";
-const EXPORT_URL = "http://localhost:5000/api/analysis/export";
-
+import API_BASE_URL from "../api";
+const API_URL = `${API_BASE_URL}/analysis/stats`;
+const EXPORT_URL = `${API_BASE_URL}/analysis/export`;
 const DetectionAnalytics = () => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);

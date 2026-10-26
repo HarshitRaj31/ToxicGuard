@@ -3,9 +3,8 @@ import React, { useState } from "react";
 import axios from "axios";
 import { startRegistration } from "@simplewebauthn/browser";
 import "./Login.css";
-
-const API_URL = "http://localhost:5000/api/passkeys";
-
+import API_BASE_URL from "../api";
+const API_URL = `${API_BASE_URL}/passkeys`;
 const PasskeySetup = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
