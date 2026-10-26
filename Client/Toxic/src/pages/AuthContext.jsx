@@ -214,6 +214,7 @@ const passwordlessLogin = async () => {
         login,
         completePasskeyLogin,
         passwordlessLogin,
+           faceLogin,
         register,
         logout,
         checkFaceEnrollment,
