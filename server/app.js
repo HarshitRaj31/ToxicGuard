@@ -9,6 +9,7 @@ const activityRoutes = require("./routes/activityRoutes");
 const faceRoutes = require("./routes/faceRoutes");
 const passkeyRoutes = require("./routes/passkeyRoutes");
 const app=express();
+app.set("trust proxy", 1);
 app.use(helmet());
 
 const allowedOrigins = [
