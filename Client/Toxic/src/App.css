@@ -2,8 +2,6 @@
    ToxicGuard — Global Application Styles
    ======================================== */
 
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap");
-
 /* Keep sizing predictable across all pages */
 *,
 *::before,
@@ -13,7 +11,7 @@
 
 :root {
   color-scheme: dark;
-  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont,
+  font-family: system-ui, -apple-system, BlinkMacSystemFont,
     "Segoe UI", sans-serif;
 
   /* ----- Core palette ----- */
@@ -90,7 +88,7 @@ button,
 input,
 textarea,
 select {
-  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont,
+  font-family: system-ui, -apple-system, BlinkMacSystemFont,
     "Segoe UI", sans-serif;
 }
 

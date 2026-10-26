@@ -6,7 +6,6 @@ import React, {
   useState,
 } from "react";
 import axios from "axios";
-import { startAuthentication } from "@simplewebauthn/browser";
 
 const AuthContext = createContext(null);
 import API_BASE_URL from "../api";
@@ -92,6 +91,7 @@ const passwordlessLogin = async () => {
   const { attemptId, options } = optionsResponse.data;
 
   // Ask the browser/device to authenticate with a passkey.
+  const { startAuthentication } = await import("@simplewebauthn/browser");
   const credential = await startAuthentication({
     optionsJSON: options,
   });
@@ -130,6 +130,7 @@ const passwordlessLogin = async () => {
     );
 
     // This opens the browser/device passkey prompt.
+    const { startAuthentication } = await import("@simplewebauthn/browser");
     const passkeyResponse = await startAuthentication({
       optionsJSON: optionsResponse.data,
     });
