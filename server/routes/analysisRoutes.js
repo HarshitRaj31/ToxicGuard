@@ -56,8 +56,9 @@ console.log("[Analysis timing] Custom word count:", customWords.length);
     } else {
 
       // Send comment to Python AI model
-      const AI_SERVICE_URL =
-  process.env.AI_SERVICE_URL || "http://127.0.0.1:8000";
+      const AI_SERVICE_URL = (
+        process.env.AI_SERVICE_URL || "http://127.0.0.1:8000"
+      ).replace(/\/+$/, "");
 
 stageStart = Date.now();
 
@@ -73,19 +74,22 @@ console.log(
   "ms"
 );
 
-      result = aiResponse.data.result;
-      confidence = aiResponse.data.confidence;
-      detectedLabels = aiResponse.data.detectedLabels || [];
-      // Category based on AI result
-      if (result === "Safe") {
-        category = "Non-Toxic";
-      } else if (result === "Hate Speech") {
-        category = "Hate Speech";
-      } else if (result === "Offensive") {
-        category = "Offensive";
-      } else {
-        category = "Toxic";
+      const prediction = aiResponse.data;
+
+      if (
+        !prediction ||
+        typeof prediction.result !== "string" ||
+        typeof prediction.category !== "string" ||
+        typeof prediction.confidence !== "number" ||
+        !Array.isArray(prediction.detectedLabels)
+      ) {
+        throw new Error("AI service returned an invalid prediction.");
       }
+
+      result = prediction.result;
+      category = prediction.category;
+      confidence = prediction.confidence;
+      detectedLabels = prediction.detectedLabels;
     }
 
     // Save result to MongoDB
@@ -128,11 +132,17 @@ console.log(
     return res.status(201).json(analysis);
 
   } catch (error) {
-    console.error("Analysis Error:", error);
+    console.error("Analysis Error:", error.message);
+
+    if (axios.isAxiosError(error)) {
+      return res.status(503).json({
+        message:
+          "The analysis service is unavailable. Start the AI service or check AI_SERVICE_URL, then try again.",
+      });
+    }
 
     return res.status(500).json({
-      message: "Failed to analyze comment.Please try again",
-      
+      message: "Failed to analyze comment. Please try again.",
     });
   }
 });

@@ -1,8 +1,10 @@
 import joblib
+from pathlib import Path
 
+MODEL_DIR = Path(__file__).resolve().parent
 
-model = joblib.load("toxic_model.pkl")
-vectorizer = joblib.load("vectorizer.pkl")
+model = joblib.load(MODEL_DIR / "toxic_model.pkl")
+vectorizer = joblib.load(MODEL_DIR / "vectorizer.pkl")
 
 
 labels = [
