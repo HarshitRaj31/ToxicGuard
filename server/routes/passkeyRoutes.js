@@ -8,6 +8,7 @@ const {
   verifyAuthenticationResponse,
 } = require("@simplewebauthn/server");
 const PasswordlessChallenge = require("../models/PasswordlessChallenge");
+const User = require("../models/user");
 const crypto = require("crypto");
 
 const { protect } = require("../middleware/authMiddleware");
@@ -138,8 +139,6 @@ await Passkey.create({
     });
   }
 });
-
-const User = require("../models/user");
 
 // Start passkey authentication for a known account.
 

@@ -5,7 +5,13 @@ const bcrypt = require("bcryptjs");
 const User = require("./models/user");
 
 async function createAdmin() {
+  let exitCode = 0;
+
   try {
+    if (!process.env.MONGO_URI) {
+      throw new Error("MONGO_URI is missing from the environment.");
+    }
+
     await mongoose.connect(process.env.MONGO_URI);
 
     const email = process.env.ADMIN_EMAIL?.trim().toLowerCase();
@@ -34,8 +40,10 @@ async function createAdmin() {
     console.log("Admin account created successfully.");
   } catch (error) {
     console.error("Admin creation failed:", error.message);
+    exitCode = 1;
   } finally {
     await mongoose.disconnect();
+    process.exitCode = exitCode;
   }
 }
 

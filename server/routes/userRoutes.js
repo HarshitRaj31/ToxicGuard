@@ -13,7 +13,8 @@ const router = express.Router();
 // GET /api/users — Get users with search, role filter, and pagination
 router.get("/", protect, adminOnly, async (req, res) => {
   try {
-    const { search = "", role = "all" } = req.query;
+    const search = typeof req.query.search === "string" ? req.query.search : "";
+    const role = typeof req.query.role === "string" ? req.query.role : "all";
 
     const page = Math.max(1, parseInt(req.query.page, 10) || 1);
     const limit = Math.min(
