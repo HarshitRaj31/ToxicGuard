@@ -1,5 +1,6 @@
 import "dotenv/config";
 import express from "express";
+import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { createRequire } from "module";
@@ -24,20 +25,20 @@ async function connectDatabaseInBackground() {
   mongoose.set("bufferCommands", false);
 
   if (!process.env.MONGO_URI) {
-    console.log("MONGO_URI not set — running with in-memory database.");
+    console.log("MONGO_URI not set — running with instant in-memory database.");
     return;
   }
 
   try {
     await mongoose.connect(process.env.MONGO_URI, {
-      serverSelectionTimeoutMS: 4000,
+      serverSelectionTimeoutMS: 2500,
     });
     console.log("MongoDB connected successfully.");
 
     // Remove demo accounts if previously created
-    await User.deleteMany({
+    User.deleteMany({
       email: { $in: ["admin@toxicguard.com", "user@toxicguard.com"] },
-    });
+    }).catch(() => {});
   } catch (err) {
     console.warn(
       "MongoDB not connected — using built-in in-memory data store:",
@@ -47,7 +48,36 @@ async function connectDatabaseInBackground() {
 }
 
 async function startServer() {
-  if (process.env.NODE_ENV !== "production") {
+  const distPath = path.resolve(__dirname, "dist");
+  const distIndex = path.join(distPath, "index.html");
+  const modelsPath = path.resolve(__dirname, "Client/Toxic/public/models");
+
+  // Always serve biometric models with long cache headers for instant loading
+  app.use(
+    "/models",
+    express.static(modelsPath, {
+      maxAge: "7d",
+      immutable: true,
+    })
+  );
+
+  if (fs.existsSync(distIndex)) {
+    // Serve pre-compiled production bundle for sub-second page loads
+    app.use(
+      "/assets",
+      express.static(path.join(distPath, "assets"), {
+        maxAge: "1y",
+        immutable: true,
+      })
+    );
+    app.use(express.static(distPath, { maxAge: 0 }));
+
+    app.get("*", (req, res, next) => {
+      if (req.path.startsWith("/api")) return next();
+      res.setHeader("Cache-Control", "no-cache");
+      res.sendFile(distIndex);
+    });
+  } else {
     const { createServer: createViteServer } = await import("vite");
     const vite = await createViteServer({
       configFile: path.resolve(__dirname, "vite.config.js"),
@@ -55,15 +85,6 @@ async function startServer() {
       appType: "spa",
     });
     app.use(vite.middlewares);
-  } else {
-    const distPath = path.resolve(__dirname, "dist");
-    const modelsPath = path.resolve(__dirname, "Client/Toxic/public/models");
-    app.use("/models", express.static(modelsPath));
-    app.use(express.static(distPath));
-    app.get("*", (req, res, next) => {
-      if (req.path.startsWith("/api")) return next();
-      res.sendFile(path.join(distPath, "index.html"));
-    });
   }
 
   app.listen(PORT, "0.0.0.0", () => {

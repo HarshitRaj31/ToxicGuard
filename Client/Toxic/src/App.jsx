@@ -1,33 +1,34 @@
-
 import "./App.css";
 import { lazy, Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
 
 import ProtectedRoute from "./components/ProtectedRoutes";
 import UserLayout from "./components/UserLayout";
+
 import Home from "./pages/Home";
-const Register = lazy(() => import("./pages/Register"));
-const Login = lazy(() => import("./pages/Login"));
-const Dashboard = lazy(() => import("./pages/Dashboard"));
-const Analysis = lazy(() => import("./pages/Analysis"));
-const History = lazy(() => import("./pages/History"));
-const Custom = lazy(() => import("./pages/Custom"));
-const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
-const ManagerUsers = lazy(() => import("./pages/ManagerUsers"));
-const ActivityLogs = lazy(() => import("./pages/ActivityLogs"));
-const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
-const ResetPassword = lazy(() => import("./pages/ResetPassword"));
+import Register from "./pages/Register";
+import Login from "./pages/Login";
+import Dashboard from "./pages/Dashboard";
+import Analysis from "./pages/Analysis";
+import History from "./pages/History";
+import Custom from "./pages/Custom";
+import AdminDashboard from "./pages/AdminDashboard";
+import ManagerUsers from "./pages/ManagerUsers";
+import ActivityLogs from "./pages/ActivityLogs";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
+import PasskeySetup from "./pages/PasskeySetup";
+import PasskeySettings from "./pages/PasskeySettings";
+
 const FaceEnrollment = lazy(() => import("./components/FaceEnrollment"));
 const FaceLogin = lazy(() => import("./pages/Face-Login"));
-const PasskeySetup = lazy(() => import("./pages/PasskeySetup"));
-const PasskeySettings = lazy(() => import("./pages/PasskeySettings"));
 
 function App() {
   return (
     <Suspense
       fallback={
         <p role="status" className="route-loading">
-          Loading page...
+          Loading...
         </p>
       }
     >

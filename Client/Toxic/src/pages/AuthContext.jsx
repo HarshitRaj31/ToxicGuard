@@ -1,4 +1,3 @@
-
 import React, {
   createContext,
   useContext,
@@ -6,18 +5,37 @@ import React, {
   useState,
 } from "react";
 import axios from "axios";
+import API_BASE_URL from "../api";
 
 const AuthContext = createContext(null);
-import API_BASE_URL from "../api";
 
 const API_URL = `${API_BASE_URL}/auth`;
 const PASSKEY_API_URL = `${API_BASE_URL}/passkeys`;
 const FACE_API_URL = `${API_BASE_URL}/face`;
-export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
 
-  // Restore an existing full login session.
+function getInitialCachedUser() {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) return null;
+    const rawUser = localStorage.getItem("user");
+    if (rawUser) {
+      return JSON.parse(rawUser);
+    }
+  } catch {
+    // ignore storage errors
+  }
+  return null;
+}
+
+export const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(() => getInitialCachedUser());
+  const [loading, setLoading] = useState(() => {
+    const hasToken = Boolean(localStorage.getItem("token"));
+    const hasCachedUser = Boolean(getInitialCachedUser());
+    return hasToken && !hasCachedUser;
+  });
+
+  // Restore / validate an existing login session in the background
   useEffect(() => {
     const checkSession = async () => {
       const token = localStorage.getItem("token");
@@ -33,17 +51,18 @@ export const AuthProvider = ({ children }) => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
+          timeout: 4000,
         });
 
-        setUser(response.data.user);
+        const verifiedUser = response.data.user;
+        localStorage.setItem("user", JSON.stringify(verifiedUser));
+        setUser(verifiedUser);
       } catch (error) {
-        console.error(
-          "Session restoration failed:",
-          error.response?.data?.message || error.message
-        );
-
-        localStorage.removeItem("token");
-        setUser(null);
+        if (error.response?.status === 401 || error.response?.status === 403) {
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          setUser(null);
+        }
       } finally {
         setLoading(false);
       }
@@ -61,8 +80,6 @@ export const AuthProvider = ({ children }) => {
 
     const data = response.data;
 
-    // A second factor is required. Do not store the temporary token
-    // as a normal authenticated session.
     if (data.requiresPasskey) {
       return {
         requiresPasskey: true,
@@ -71,51 +88,49 @@ export const AuthProvider = ({ children }) => {
       };
     }
 
-    // Regular password login.
     if (!data.token || !data.user) {
       throw new Error("The server returned an invalid login response.");
     }
 
     localStorage.setItem("token", data.token);
+    localStorage.setItem("user", JSON.stringify(data.user));
     setUser(data.user);
 
     return data.user;
   };
 
-const passwordlessLogin = async () => {
-  // Request authentication options without an email or password.
-  const optionsResponse = await axios.post(
-    `${PASSKEY_API_URL}/passwordless/options`
-  );
+  const passwordlessLogin = async () => {
+    const optionsResponse = await axios.post(
+      `${PASSKEY_API_URL}/passwordless/options`
+    );
 
-  const { attemptId, options } = optionsResponse.data;
+    const { attemptId, options } = optionsResponse.data;
 
-  // Ask the browser/device to authenticate with a passkey.
-  const { startAuthentication } = await import("@simplewebauthn/browser");
-  const credential = await startAuthentication({
-    optionsJSON: options,
-  });
+    const { startAuthentication } = await import("@simplewebauthn/browser");
+    const credential = await startAuthentication({
+      optionsJSON: options,
+    });
 
-  // Verify the passkey with the backend.
-  const verifyResponse = await axios.post(
-    `${PASSKEY_API_URL}/passwordless/verify`,
-    {
-      attemptId,
-      response: credential,
+    const verifyResponse = await axios.post(
+      `${PASSKEY_API_URL}/passwordless/verify`,
+      {
+        attemptId,
+        response: credential,
+      }
+    );
+
+    const { verified, token, user: userData } = verifyResponse.data;
+
+    if (!verified || !token || !userData) {
+      throw new Error("Passkey authentication failed.");
     }
-  );
 
-  const { verified, token, user: userData } = verifyResponse.data;
+    localStorage.setItem("token", token);
+    localStorage.setItem("user", JSON.stringify(userData));
+    setUser(userData);
 
-  if (!verified || !token || !userData) {
-    throw new Error("Passkey authentication failed.");
-  }
-
-  localStorage.setItem("token", token);
-  setUser(userData);
-
-  return userData;
-};
+    return userData;
+  };
 
   // Step 2: Verify the passkey and create the real session.
   const completePasskeyLogin = async (preAuthToken) => {
@@ -123,19 +138,16 @@ const passwordlessLogin = async () => {
       throw new Error("Please sign in with your password again.");
     }
 
-    // Get WebAuthn authentication options for this login attempt.
     const optionsResponse = await axios.post(
       `${PASSKEY_API_URL}/login/options`,
       { preAuthToken }
     );
 
-    // This opens the browser/device passkey prompt.
     const { startAuthentication } = await import("@simplewebauthn/browser");
     const passkeyResponse = await startAuthentication({
       optionsJSON: optionsResponse.data,
     });
 
-    // The server verifies the passkey and returns the full session token.
     const verificationResponse = await axios.post(
       `${PASSKEY_API_URL}/login/verify`,
       {
@@ -151,12 +163,13 @@ const passwordlessLogin = async () => {
     }
 
     localStorage.setItem("token", token);
+    localStorage.setItem("user", JSON.stringify(userData));
     setUser(userData);
 
     return userData;
   };
 
-  // Admin face-only login prototype.
+  // Admin face-only login
   const faceLogin = async (descriptor) => {
     const response = await axios.post(`${FACE_API_URL}/admin-login`, {
       descriptor,
@@ -168,8 +181,8 @@ const passwordlessLogin = async () => {
       throw new Error("Admin face verification failed.");
     }
 
-    // Store the real session and update React authentication state.
     localStorage.setItem("token", token);
+    localStorage.setItem("user", JSON.stringify(userData));
     setUser(userData);
 
     return userData;
@@ -203,9 +216,9 @@ const passwordlessLogin = async () => {
 
   const logout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("user");
     setUser(null);
   };
-
 
   return (
     <AuthContext.Provider
@@ -215,7 +228,7 @@ const passwordlessLogin = async () => {
         login,
         completePasskeyLogin,
         passwordlessLogin,
-           faceLogin,
+        faceLogin,
         register,
         logout,
         checkFaceEnrollment,
@@ -225,7 +238,6 @@ const passwordlessLogin = async () => {
       {children}
     </AuthContext.Provider>
   );
-
 };
 
 export const useAuth = () => {

@@ -93,7 +93,7 @@ router.post("/register", authLimiter, async (req, res) => {
       });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 12);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await User.create({
       name: normalizedName,
@@ -102,21 +102,14 @@ router.post("/register", authLimiter, async (req, res) => {
       role: "user",
     });
 
-    try {
-      await Activity.create({
-        user: user._id,
-        userName: user.name,
-        userEmail: user.email,
-        action: "REGISTER",
-        details: "New account registered",
-        ipAddress: req.ip,
-      });
-    } catch (activityError) {
-      console.error(
-        "Registration activity logging failed:",
-        activityError.message
-      );
-    }
+    Activity.create({
+      user: user._id,
+      userName: user.name,
+      userEmail: user.email,
+      action: "REGISTER",
+      details: "New account registered",
+      ipAddress: req.ip,
+    }).catch(() => {});
 
     return res.status(201).json({
       message: "Registration successful",

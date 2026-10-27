@@ -54,35 +54,28 @@ console.log("[Analysis timing] Custom word count:", customWords.length);
       confidence = 98;
       detectedLabels = ["custom_banned_word"];
     } else {
+      const { predictFallback } = require("../utils/predictFallback");
+      const configuredAiUrl = (process.env.AI_SERVICE_URL || "").trim().replace(/\/+$/, "");
+      let prediction = null;
 
-      // Send comment to Python AI model with local fallback
-      const AI_SERVICE_URL = (
-        process.env.AI_SERVICE_URL ||
-        (process.env.NODE_ENV === "production"
-          ? "https://toxicguard-ai-k87a.onrender.com"
-          : "http://127.0.0.1:8000")
-      ).replace(/\/+$/, "");
-
-      stageStart = Date.now();
-      let prediction;
-
-      try {
-        const aiResponse = await axios.post(
-          `${AI_SERVICE_URL}/predict`,
-          { text: comment.trim() },
-          { timeout: 4000 }
-        );
-        prediction = aiResponse.data;
-      } catch (aiErr) {
-        const { predictFallback } = require("../utils/predictFallback");
+      if (
+        configuredAiUrl &&
+        (!global.__aiServiceDownUntil || Date.now() > global.__aiServiceDownUntil)
+      ) {
+        try {
+          const aiResponse = await axios.post(
+            `${configuredAiUrl}/predict`,
+            { text: comment.trim() },
+            { timeout: 1200 }
+          );
+          prediction = aiResponse.data;
+        } catch {
+          global.__aiServiceDownUntil = Date.now() + 60000;
+          prediction = predictFallback(comment.trim());
+        }
+      } else {
         prediction = predictFallback(comment.trim());
       }
-
-      console.log(
-        "[Analysis timing] AI service:",
-        Date.now() - stageStart,
-        "ms"
-      );
 
       if (
         !prediction ||
@@ -91,7 +84,7 @@ console.log("[Analysis timing] Custom word count:", customWords.length);
         typeof prediction.confidence !== "number" ||
         !Array.isArray(prediction.detectedLabels)
       ) {
-        throw new Error("AI service returned an invalid prediction.");
+        prediction = predictFallback(comment.trim());
       }
 
       result = prediction.result;
@@ -100,43 +93,26 @@ console.log("[Analysis timing] Custom word count:", customWords.length);
       detectedLabels = prediction.detectedLabels;
     }
 
-    // Save result to MongoDB
-  stageStart = Date.now();
+    // Save result to database
+    const analysis = await Analysis.create({
+      user: req.user._id,
+      comment: comment.trim(),
+      result,
+      category,
+      confidence,
+      detectedLabels,
+    });
 
-const analysis = await Analysis.create({
-  user: req.user._id,
-  comment: comment.trim(),
-  result,
-  category,
-  confidence,
-  detectedLabels,
-});
-console.log(
-  "[Analysis saved]",
-  analysis._id.toString(),
-  "User:",
-  analysis.user?.toString()
-);
-console.log(
-  "[Analysis timing] Database save:",
-  Date.now() - stageStart,
-  "ms"
-);
-    try {
-  await Activity.create({
-    user: req.user._id,
-    userName: req.user.name,
-    userEmail: req.user.email,
-    action: "ANALYSIS",
-    details: `Comment analyzed. Result: ${result}; Category: ${category}`,
-    ipAddress: req.ip,
-  });
-} catch (activityError) {
-  console.error(
-    "Analysis activity logging failed:",
-    activityError.message
-  );
-}
+    // Log activity asynchronously without delaying response
+    Activity.create({
+      user: req.user._id,
+      userName: req.user.name,
+      userEmail: req.user.email,
+      action: "ANALYSIS",
+      details: `Comment analyzed. Result: ${result}; Category: ${category}`,
+      ipAddress: req.ip,
+    }).catch(() => {});
+
     return res.status(201).json(analysis);
 
   } catch (error) {
@@ -187,26 +163,8 @@ router.post("/demo", async (req, res) => {
       confidence = 98;
       detectedLabels = ["custom_banned_word"];
     } else {
-      const AI_SERVICE_URL = (
-        process.env.AI_SERVICE_URL ||
-        (process.env.NODE_ENV === "production"
-          ? "https://toxicguard-ai-k87a.onrender.com"
-          : "http://127.0.0.1:8000")
-      ).replace(/\/+$/, "");
-
-      let prediction;
-      try {
-        const aiResponse = await axios.post(
-          `${AI_SERVICE_URL}/predict`,
-          { text: comment.trim() },
-          { timeout: 3500 }
-        );
-        prediction = aiResponse.data;
-      } catch {
-        const { predictFallback } = require("../utils/predictFallback");
-        prediction = predictFallback(comment.trim());
-      }
-
+      const { predictFallback } = require("../utils/predictFallback");
+      const prediction = predictFallback(comment.trim());
       result = prediction.result || "Safe";
       category = prediction.category || "Non-Toxic";
       confidence = prediction.confidence || 95;
