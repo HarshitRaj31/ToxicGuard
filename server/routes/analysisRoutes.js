@@ -154,6 +154,82 @@ console.log(
     });
   }
 });
+
+// PUBLIC DEMO ANALYSIS (no auth required for landing page preview)
+router.post("/demo", async (req, res) => {
+  try {
+    const { comment } = req.body || {};
+    if (typeof comment !== "string" || !comment.trim()) {
+      return res.status(400).json({ message: "Please provide a valid comment." });
+    }
+    if (comment.trim().length > 5000) {
+      return res.status(400).json({ message: "Comment cannot exceed 5000 characters." });
+    }
+
+    const text = comment.trim().toLowerCase();
+    const customWords = await CustomWord.find();
+    const matchedWord = customWords.find((item) => {
+      const word = item.word?.trim().toLowerCase();
+      if (!word) return false;
+      const escapedWord = word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const pattern = new RegExp(`(^|\\W)${escapedWord}(?=\\W|$)`, "i");
+      return pattern.test(text);
+    });
+
+    let result;
+    let category;
+    let confidence;
+    let detectedLabels = [];
+
+    if (matchedWord) {
+      result = "Toxic";
+      category = "Custom Banned Word";
+      confidence = 98;
+      detectedLabels = ["custom_banned_word"];
+    } else {
+      const AI_SERVICE_URL = (
+        process.env.AI_SERVICE_URL ||
+        (process.env.NODE_ENV === "production"
+          ? "https://toxicguard-ai-k87a.onrender.com"
+          : "http://127.0.0.1:8000")
+      ).replace(/\/+$/, "");
+
+      let prediction;
+      try {
+        const aiResponse = await axios.post(
+          `${AI_SERVICE_URL}/predict`,
+          { text: comment.trim() },
+          { timeout: 3500 }
+        );
+        prediction = aiResponse.data;
+      } catch {
+        const { predictFallback } = require("../utils/predictFallback");
+        prediction = predictFallback(comment.trim());
+      }
+
+      result = prediction.result || "Safe";
+      category = prediction.category || "Non-Toxic";
+      confidence = prediction.confidence || 95;
+      detectedLabels = prediction.detectedLabels || [];
+    }
+
+    return res.status(200).json({
+      comment: comment.trim(),
+      result,
+      category,
+      confidence,
+      detectedLabels,
+    });
+  } catch (error) {
+    console.error("Demo Analysis Error:", error.message);
+    const { predictFallback } = require("../utils/predictFallback");
+    const fallbackResult = predictFallback(req.body?.comment || "");
+    return res.status(200).json({
+      comment: req.body?.comment || "",
+      ...fallbackResult,
+    });
+  }
+});
 // GET all analysis history
 
  // GET analysis history

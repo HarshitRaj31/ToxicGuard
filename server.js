@@ -32,7 +32,7 @@ async function ensureDefaultAdmin() {
 
     const existing = await User.findOne({ email });
     if (!existing) {
-      const hashedPassword = await bcrypt.hash(password, 12);
+      const hashedPassword = await bcrypt.hash(password, 10);
       await User.create({
         name: "System Admin",
         email,
@@ -46,28 +46,31 @@ async function ensureDefaultAdmin() {
   }
 }
 
-async function startServer() {
+async function connectDatabaseInBackground() {
   mongoose.set("bufferCommands", false);
 
-  if (process.env.MONGO_URI) {
-    try {
-      await mongoose.connect(process.env.MONGO_URI, {
-        serverSelectionTimeoutMS: 4000,
-      });
-      console.log("MongoDB connected successfully.");
-      await ensureDefaultAdmin();
-    } catch (err) {
-      console.warn(
-        "MongoDB not connected — using built-in in-memory data store:",
-        err.message
-      );
-    }
-  } else {
+  if (!process.env.MONGO_URI) {
     console.log(
       "MONGO_URI not set — running with pre-seeded in-memory database (admin@toxicguard.com / Admin@123456)"
     );
+    return;
   }
 
+  try {
+    await mongoose.connect(process.env.MONGO_URI, {
+      serverSelectionTimeoutMS: 4000,
+    });
+    console.log("MongoDB connected successfully.");
+    await ensureDefaultAdmin();
+  } catch (err) {
+    console.warn(
+      "MongoDB not connected — using built-in in-memory data store:",
+      err.message
+    );
+  }
+}
+
+async function startServer() {
   if (process.env.NODE_ENV !== "production") {
     const { createServer: createViteServer } = await import("vite");
     const vite = await createViteServer({
@@ -89,6 +92,7 @@ async function startServer() {
 
   app.listen(PORT, "0.0.0.0", () => {
     console.log(`Server listening on http://0.0.0.0:${PORT}`);
+    connectDatabaseInBackground();
   });
 }
 

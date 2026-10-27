@@ -122,11 +122,55 @@
 }
 
 .login-subtitle {
-  margin: 10px 0 30px;
+  margin: 10px 0 20px;
   color: var(--text-muted);
   font-size: 14px;
   line-height: 1.6;
   text-align: center;
+}
+
+/* Quick Demo Bar */
+.login-demo-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 8px 12px;
+  margin-bottom: 22px;
+  border-radius: 14px;
+  background: rgba(139, 92, 246, 0.12);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+}
+
+.login-demo-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.login-demo-pills {
+  display: flex;
+  gap: 8px;
+}
+
+.login-demo-btn {
+  padding: 6px 12px !important;
+  font-size: 0.8rem !important;
+  font-weight: 700 !important;
+  border-radius: 8px !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: var(--text) !important;
+  cursor: pointer;
+  transition: all 0.2s ease !important;
+}
+
+.login-demo-btn:hover {
+  background: rgba(139, 92, 246, 0.35) !important;
+  border-color: var(--accent) !important;
+  transform: translateY(-1px);
 }
 
 /* ===== Form ===== */
