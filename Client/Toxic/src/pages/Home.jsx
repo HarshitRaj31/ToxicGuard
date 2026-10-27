@@ -136,21 +136,6 @@ const Home = () => {
               </Link>
             )}
           </div>
-
-          {/* Quick Demo Credentials Strip */}
-          <div className="home-demo-strip">
-            <span className="home-demo-pill">Quick Demo Access:</span>
-            <span>
-              Admin: <code>admin@toxicguard.com</code> (PW: <code>Admin@123456</code>)
-            </span>
-            <span className="home-demo-sep">|</span>
-            <span>
-              User: <code>user@toxicguard.com</code> (PW: <code>User@123456</code>)
-            </span>
-            <Link to="/login" className="home-demo-link">
-              Quick Login →
-            </Link>
-          </div>
         </div>
 
         {/* Metrics Bar */}

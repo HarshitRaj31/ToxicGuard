@@ -135,38 +135,6 @@ const Login = () => {
           Sign in to Toxic Detector
         </p>
 
-        <div className="login-demo-bar">
-          <span className="login-demo-label">Demo access:</span>
-          <div className="login-demo-pills">
-            <button
-              type="button"
-              className="login-demo-btn"
-              onClick={() => {
-                setFormData({
-                  email: "admin@toxicguard.com",
-                  password: "Admin@123456",
-                });
-                setMessage("Loaded Admin credentials.");
-              }}
-            >
-              🛡️ Admin
-            </button>
-            <button
-              type="button"
-              className="login-demo-btn"
-              onClick={() => {
-                setFormData({
-                  email: "user@toxicguard.com",
-                  password: "User@123456",
-                });
-                setMessage("Loaded Demo User credentials.");
-              }}
-            >
-              👤 User
-            </button>
-          </div>
-        </div>
-
         <form onSubmit={handleSubmit}>
           <label htmlFor="email">Email address</label>
 

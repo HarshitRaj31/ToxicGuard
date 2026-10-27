@@ -15,44 +15,16 @@ process.env.FACE_ENCRYPTION_KEY =
   "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
 
 const mongoose = require("mongoose");
-const bcrypt = require("bcryptjs");
 const app = require("./server/app.js");
 const User = require("./server/models/user.js");
 
 const PORT = 3000;
 
-async function ensureDefaultAdmin() {
-  try {
-    const email = (
-      process.env.ADMIN_EMAIL || "admin@toxicguard.com"
-    )
-      .trim()
-      .toLowerCase();
-    const password = process.env.ADMIN_PASSWORD || "Admin@123456";
-
-    const existing = await User.findOne({ email });
-    if (!existing) {
-      const hashedPassword = await bcrypt.hash(password, 10);
-      await User.create({
-        name: "System Admin",
-        email,
-        password: hashedPassword,
-        role: "admin",
-      });
-      console.log(`Default admin ensured (${email})`);
-    }
-  } catch (err) {
-    console.warn("Could not ensure default admin:", err.message);
-  }
-}
-
 async function connectDatabaseInBackground() {
   mongoose.set("bufferCommands", false);
 
   if (!process.env.MONGO_URI) {
-    console.log(
-      "MONGO_URI not set — running with pre-seeded in-memory database (admin@toxicguard.com / Admin@123456)"
-    );
+    console.log("MONGO_URI not set — running with in-memory database.");
     return;
   }
 
@@ -61,7 +33,11 @@ async function connectDatabaseInBackground() {
       serverSelectionTimeoutMS: 4000,
     });
     console.log("MongoDB connected successfully.");
-    await ensureDefaultAdmin();
+
+    // Remove demo accounts if previously created
+    await User.deleteMany({
+      email: { $in: ["admin@toxicguard.com", "user@toxicguard.com"] },
+    });
   } catch (err) {
     console.warn(
       "MongoDB not connected — using built-in in-memory data store:",
