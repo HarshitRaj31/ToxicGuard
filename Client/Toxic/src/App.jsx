@@ -5,8 +5,7 @@ import { Routes, Route } from "react-router-dom";
 
 import ProtectedRoute from "./components/ProtectedRoutes";
 import UserLayout from "./components/UserLayout";
-
-const Home = lazy(() => import("./pages/Home"));
+import Home from "./pages/Home";
 const Register = lazy(() => import("./pages/Register"));
 const Login = lazy(() => import("./pages/Login"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
