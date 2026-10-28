@@ -1,129 +1,163 @@
-# 🛡️ ToxicGuard — Toxic Speech Detection System
+<div align="center">
 
-**Detect toxic speech. Promote safer conversations.**
+# 🛡️ ToxicGuard
 
-ToxicGuard is a web-based toxic speech detection system that analyzes user-submitted text and identifies potentially harmful language using a Python AI service, a Node.js backend, and MongoDB.
+### Detect toxic speech. Promote safer conversations.
+
+A full-stack, AI-assisted toxic speech detection platform with secure authentication, custom banned words, passkey login, and per-user analysis history.
+
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://toxic-guard-iota.vercel.app/)
+[![API](https://img.shields.io/badge/API-Render-46E3B7?style=for-the-badge&logo=render&logoColor=black)](https://toxicguard-api-k87a.onrender.com/)
+[![AI Service](https://img.shields.io/badge/AI%20Service-Render-46E3B7?style=for-the-badge&logo=render&logoColor=black)](https://toxicguard-ai-5u8m.onrender.com/)
+
+![React](https://img.shields.io/badge/React-20232A?style=flat-square&logo=react&logoColor=61DAFB)
+![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat-square&logo=vite&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat-square&logo=nodedotjs&logoColor=white)
+![Express](https://img.shields.io/badge/Express-000000?style=flat-square&logo=express&logoColor=white)
+![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=flat-square&logo=mongodb&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white)
+![JWT](https://img.shields.io/badge/JWT-000000?style=flat-square&logo=jsonwebtokens&logoColor=white)
+![WebAuthn](https://img.shields.io/badge/WebAuthn-Passkeys-5C2D91?style=flat-square)
+
+[Live Demo](https://toxic-guard-iota.vercel.app/) · [Report a Bug](https://github.com/HarshitRaj31/ToxicGuard/issues) · [Request a Feature](https://github.com/HarshitRaj31/ToxicGuard/issues)
+
+</div>
+
+---
+
+## 📑 Table of Contents
+
+- [About](#-about)
+- [Live Demo](#-live-demo)
+- [Features](#-features)
+- [Tech Stack](#-tech-stack)
+- [Architecture](#-architecture)
+- [Project Structure](#-project-structure)
+- [Getting Started](#-getting-started)
+- [Environment Variables](#-environment-variables)
+- [API Reference](#-api-reference)
+- [Deployment](#-deployment)
+- [Troubleshooting](#-troubleshooting)
+- [Security](#-security)
+- [Roadmap](#-roadmap)
+- [Contributing](#-contributing)
+- [Author](#-author)
+- [License](#-license)
+
+---
+
+## 📖 About
+
+**ToxicGuard** analyzes user-submitted text and flags potentially harmful language. It combines a **React + Vite** frontend, a **Node.js + Express** API, a dedicated **Python AI service**, and **MongoDB** for persistence.
+
+Each submission first passes through **custom banned-word rules**. If none match, the text is sent to the AI model, which returns a classification, confidence score, and detected labels. Results are saved per user so they can be reviewed later.
 
 ## 🌐 Live Demo
 
-- **Frontend:** https://toxic-guard-iota.vercel.app/
-- **Backend API:** https://toxicguard-api-k87a.onrender.com/
-- **AI Service:** https://toxicguard-ai-5u8m.onrender.com/
+| Service | URL |
+|---|---|
+| 🖥️ Frontend | https://toxic-guard-iota.vercel.app/ |
+| ⚙️ Backend API | https://toxicguard-api-k87a.onrender.com/ |
+| 🤖 AI Service | https://toxicguard-ai-5u8m.onrender.com/ |
+
+> ⏳ **Note:** Services on Render's free tier spin down when idle. The first request may take 30–60 seconds while they wake up.
 
 ## ✨ Features
 
-- AI-assisted toxic speech detection
-- Text classification with confidence scores and detected labels
-- Custom banned-word detection
-- User authentication
-- Per-user analysis history
-- Activity logging
-- WebAuthn/passkey support
-- Responsive web interface
-
-*Feature availability depends on the current implementation and deployment status.*
+- 🔍 **Toxic speech detection** — text analysis powered by a Python AI service
+- 🏷️ **Classification with confidence** — category, confidence score, and detected labels for every result
+- 🚫 **Custom banned words** — define your own restricted terms that are checked before the AI runs
+- 🔐 **User authentication** — JWT-based auth with protected routes
+- 🔑 **Passkey support** — passwordless / two-factor login via WebAuthn
+- 📜 **Analysis history** — searchable record of past analyses tied to each user
+- 📊 **Dashboards** — stats and analytics for users and admins
+- 🧾 **Activity logging** — records relevant user activity for admins
+- 📱 **Responsive interface** — works across desktop and mobile browsers
 
 ## 🧰 Tech Stack
 
-| Component | Technology |
+| Layer | Technology |
 |---|---|
-| Frontend | React, Vite |
-| Backend | Node.js, Express.js |
-| Database | MongoDB, Mongoose |
-| AI service | Python |
-| HTTP client | Axios |
-| Authentication | JWT, WebAuthn |
-| Frontend hosting | Vercel |
-| Backend and AI hosting | Render |
+| **Frontend** | React, Vite, React Router, Axios |
+| **Backend** | Node.js, Express.js |
+| **Database** | MongoDB, Mongoose |
+| **AI Service** | Python |
+| **Authentication** | JWT, WebAuthn (SimpleWebAuthn) |
+| **Hosting** | Vercel (frontend), Render (backend + AI) |
+| **Tooling** | Git, GitHub |
 
 ## 🏗️ Architecture
 
-```text
-User / Browser
-      |
-      v
-React + Vite Frontend (Vercel)
-      |
-      v
-Node.js + Express API (Render)
-      |                     |
-      v                     v
-MongoDB Database      Python AI Service (Render)
+```mermaid
+flowchart TD
+    U[👤 User / Browser] --> F[React + Vite Frontend<br/>Vercel]
+    F -- HTTP / REST --> B[Node.js + Express API<br/>Render]
+    B --> D[(MongoDB)]
+    B -- POST /predict --> A[Python AI Service<br/>Render]
 ```
 
-### Analysis Flow
+### How an analysis works
 
-1. A user submits text through the frontend.
-2. The frontend sends the request to the Node.js API.
-3. The backend checks configured custom banned-word rules.
-4. If no custom word matches, the backend forwards the text to the Python AI service.
-5. The AI service returns its classification, confidence score, and detected labels.
-6. The backend saves a successful analysis to MongoDB.
-7. The frontend displays the result and can retrieve the user's analysis history.
+1. The user submits text through the frontend.
+2. The frontend sends an authenticated request to the Node.js API.
+3. The backend checks the text against the user's **custom banned words**.
+4. If nothing matches, the backend forwards the text to the **Python AI service**.
+5. The AI service returns a classification, confidence score, and detected labels.
+6. The backend saves the successful analysis to **MongoDB**.
+7. The frontend displays the result and can retrieve the user's **history**.
 
 ## 📁 Project Structure
-
-The exact folder names may vary in your repository. A typical layout is:
 
 ```text
 ToxicGuard/
 ├── client/                 # React + Vite frontend
 ├── server/                 # Node.js + Express backend
-│   ├── models/              # Mongoose models
-│   ├── routes/              # API routes
-│   ├── middleware/          # Authentication and middleware
+│   ├── models/             # Mongoose models
+│   ├── routes/             # API routes
+│   ├── middleware/         # Auth and other middleware
 │   ├── app.js
 │   └── server.js
-├── ai-service/              # Python AI service
+├── ai-service/             # Python AI service
 ├── README.md
 └── .gitignore
 ```
+
+> Adjust folder names to match your repository layout.
 
 ## ⚙️ Getting Started
 
 ### Prerequisites
 
-- Node.js and npm
-- Python and pip
-- MongoDB or MongoDB Atlas
-- Git
+- [Node.js](https://nodejs.org/) and npm
+- [Python](https://www.python.org/) 3.x and pip
+- [MongoDB](https://www.mongodb.com/) locally, or a [MongoDB Atlas](https://www.mongodb.com/atlas) cluster
+- [Git](https://git-scm.com/)
 
-### 1. Clone the Repository
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/HarshitRaj31/ToxicGuard.git
 cd ToxicGuard
 ```
 
-### 2. Frontend Setup
-
-From your frontend directory:
+### 2. Start the Python AI service
 
 ```bash
+cd ai-service
+pip install -r requirements.txt
+# start with the command defined in your Python app (port 8000 is assumed below)
+```
+
+The service must expose a `/predict` endpoint that accepts text and returns JSON compatible with the backend.
+
+### 3. Start the backend
+
+```bash
+cd server
 npm install
 ```
 
-Create a `.env` file in the frontend directory:
-
-```env
-VITE_API_URL=http://localhost:5000/api
-```
-
-Start the development server:
-
-```bash
-npm run dev
-```
-
-### 3. Node.js Backend Setup
-
-From the backend directory:
-
-```bash
-npm install
-```
-
-Create a `.env` file in the backend directory:
+Create `server/.env`:
 
 ```env
 PORT=5000
@@ -135,65 +169,82 @@ WEBAUTHN_RP_ID=localhost
 WEBAUTHN_ORIGIN=http://localhost:5173
 ```
 
-Replace placeholder values with your own configuration. Use the AI service's actual local port and the startup command defined by your project.
-
-Start the backend using the command configured in `package.json`, for example:
-
 ```bash
 npm start
 ```
 
-### 4. Python AI Service Setup
-
-Navigate to the Python AI service directory. If the project includes a `requirements.txt`, install dependencies with:
+### 4. Start the frontend
 
 ```bash
-pip install -r requirements.txt
+cd client
+npm install
 ```
 
-Start the service using the command configured in your Python project. The backend expects a `/predict` endpoint that accepts text and returns a compatible JSON response.
+Create `client/.env`:
+
+```env
+VITE_API_URL=http://localhost:5000/api
+```
+
+```bash
+npm run dev
+```
+
+Vite prints the local URL (usually `http://localhost:5173`).
 
 ## 🔐 Environment Variables
 
-Configure production variables in the appropriate hosting dashboards. Do not commit secrets to GitHub.
+### Frontend (Vercel)
 
-### Frontend — Vercel
-
-| Variable | Purpose | Production value |
-|---|---|---|
-| `VITE_API_URL` | Base URL of the Node API | `https://toxicguard-api-k87a.onrender.com/api` |
-
-### Backend — Render
-
-| Variable | Purpose | Production value |
-|---|---|---|
-| `PORT` | Server port; Render supplies this | Usually supplied by Render |
-| `MONGO_URI` | MongoDB connection string | Your private connection string |
-| `JWT_SECRET` | JWT signing secret | Your private secret |
-| `CLIENT_URL` | Frontend origin allowed by CORS | `https://toxic-guard-iota.vercel.app` |
-| `AI_SERVICE_URL` | Base URL of the Python AI service | `https://toxicguard-ai-5u8m.onrender.com` |
-| `WEBAUTHN_RP_ID` | WebAuthn relying-party domain | `toxic-guard-iota.vercel.app` |
-| `WEBAUTHN_ORIGIN` | Expected frontend origin for WebAuthn | `https://toxic-guard-iota.vercel.app` |
-
-For local development, set `VITE_API_URL` to `http://localhost:5000/api` and configure the backend variables for your local MongoDB and AI service.
-
-## 🔌 API Route Overview
-
-The backend includes these route prefixes:
-
-| Route | Purpose |
+| Variable | Description |
 |---|---|
-| `/api/auth` | Authentication |
-| `/api/analysis` | Text analysis and analysis history |
-| `/api/custom-words` | Custom word management |
-| `/api/users` | User-related operations |
-| `/api/activity` | Activity records |
-| `/api/face` | Face-related functionality |
-| `/api/passkeys` | Passkey/WebAuthn functionality |
+| `VITE_API_URL` | Base URL of the Node.js API, including `/api` |
 
-Exact methods, request formats, and access permissions are defined by the implementation in each route.
+### Backend (Render)
 
-### Example Analysis Request
+| Variable | Description |
+|---|---|
+| `PORT` | Server port (Render sets this automatically) |
+| `MONGO_URI` | MongoDB connection string |
+| `JWT_SECRET` | Secret used to sign JWTs |
+| `CLIENT_URL` | Allowed frontend origin for CORS |
+| `AI_SERVICE_URL` | Base URL of the Python AI service |
+| `WEBAUTHN_RP_ID` | WebAuthn relying-party domain |
+| `WEBAUTHN_ORIGIN` | Expected frontend origin for WebAuthn |
+
+<details>
+<summary><b>Production values</b></summary>
+
+```env
+# Frontend
+VITE_API_URL=https://toxicguard-api-k87a.onrender.com/api
+
+# Backend
+CLIENT_URL=https://toxic-guard-iota.vercel.app
+AI_SERVICE_URL=https://toxicguard-ai-5u8m.onrender.com
+WEBAUTHN_RP_ID=toxic-guard-iota.vercel.app
+WEBAUTHN_ORIGIN=https://toxic-guard-iota.vercel.app
+```
+
+</details>
+
+> ⚠️ **Never commit `.env` files, database credentials, or JWT secrets.** Add `.env` to `.gitignore` and set production secrets in your hosting provider's dashboard.
+
+## 🔌 API Reference
+
+| Route prefix | Purpose |
+|---|---|
+| `/api/auth` | Registration, login, password reset |
+| `/api/analysis` | Text analysis, history, stats |
+| `/api/custom-words` | Manage custom banned words |
+| `/api/users` | User management |
+| `/api/activity` | Activity logs |
+| `/api/face` | Face enrollment / verification |
+| `/api/passkeys` | Passkey (WebAuthn) registration and login |
+
+### Example: analyze text
+
+**Request** (authentication required)
 
 ```http
 POST /api/analysis
@@ -207,83 +258,108 @@ Authorization: Bearer <your-token>
 }
 ```
 
-The analysis endpoint requires authentication. A successful response includes the saved analysis record, with fields such as `comment`, `result`, `category`, `confidence`, `detectedLabels`, and timestamps.
+**Response** — the saved analysis record, including:
+
+| Field | Description |
+|---|---|
+| `comment` | The submitted text |
+| `result` | Overall classification result |
+| `category` | Assigned category |
+| `confidence` | Model confidence score |
+| `detectedLabels` | Labels detected in the text |
+| `createdAt` | Timestamp of the analysis |
+
+> Exact labels depend on the AI model and backend mapping. Methods and permissions vary by route.
 
 ## 🚀 Deployment
 
-### Frontend
+<details>
+<summary><b>Frontend — Vercel</b></summary>
 
 1. Import the repository into Vercel.
-2. Configure the correct frontend root directory.
-3. Add `VITE_API_URL` to the required deployment environments.
-4. Deploy the frontend.
+2. Set the root directory to `client`.
+3. Add `VITE_API_URL` to the environment variables.
+4. Deploy.
 
-### Node.js Backend
+</details>
+
+<details>
+<summary><b>Backend — Render</b></summary>
 
 1. Create a Node.js web service on Render.
-2. Configure the backend root directory and start command.
-3. Add the required environment variables.
-4. Confirm the backend connects to MongoDB.
-5. Test the deployed API.
+2. Set the root directory to `server` and the start command (e.g. `npm start`).
+3. Add all backend environment variables.
+4. Confirm the service connects to MongoDB and responds on its health endpoint.
 
-### Python AI Service
+</details>
+
+<details>
+<summary><b>AI Service — Render</b></summary>
 
 1. Create a Python web service on Render.
-2. Configure dependencies and the startup command.
-3. Confirm the service exposes `/predict`.
-4. Set `AI_SERVICE_URL` in the Node.js service to the AI service's base URL.
+2. Set the root directory to `ai-service`, plus the build and start commands.
+3. Confirm `/predict` responds correctly.
+4. Set `AI_SERVICE_URL` on the backend to this service's URL.
+
+</details>
 
 ## 🧪 Troubleshooting
 
-### Analysis returns HTTP 500
-
-Check the Node.js service logs for the actual exception. The failure may occur during the AI request, database save, or another backend operation.
-
-### AI service returns HTTP 502 or 503
-
-Check the Python service status, deployment events, logs, and `/predict` endpoint. If the AI request fails before the database save, that request will not create an analysis record.
-
-### Analysis history is empty
-
-Verify that the analysis was saved successfully, that the authenticated user's ID matches the record's `user` field, and that the frontend calls the correct history endpoint.
-
-### CORS errors
-
-Check that `CLIENT_URL` matches the deployed frontend origin and that the backend CORS configuration permits it.
-
-### Passkeys fail
-
-Confirm that `WEBAUTHN_RP_ID` and `WEBAUTHN_ORIGIN` match the domain and origin used to access the site.
+| Problem | What to check |
+|---|---|
+| **Analysis returns HTTP 500** | Backend logs. The failure may be in the AI request, the database save, or another operation. |
+| **AI service returns 502 / 503** | Service status, deployment events, logs, and the `/predict` endpoint. If the AI call fails, no record is saved. |
+| **Analysis history is empty** | That the analysis saved successfully, the record's `user` matches the logged-in user, and the frontend calls the right history endpoint. |
+| **CORS errors** | `CLIENT_URL` must exactly match the deployed frontend origin. |
+| **Passkeys fail** | `WEBAUTHN_RP_ID` and `WEBAUTHN_ORIGIN` must match the domain and origin you are using. |
+| **First request is slow** | Render free-tier services sleep when idle; wait for them to wake up. |
 
 ## 🔒 Security
 
-- Never commit `.env` files, database credentials, JWT secrets, or private keys.
-- Add `.env` to `.gitignore`.
-- Store production secrets in Vercel and Render environment settings.
-- Require authentication for protected API routes.
-- Validate and limit incoming text.
-- Use HTTPS for deployed services.
-- Avoid logging sensitive user information.
+- Keep credentials and secrets out of version control
+- Require authentication on protected API routes
+- Validate and limit incoming text length
+- Serve all deployed services over HTTPS
+- Avoid logging sensitive user information
+- Restrict admin endpoints to authorized users
 
-## 🛣️ Possible Future Improvements
+## 🛣️ Roadmap
 
-- Add automated tests for API endpoints.
-- Improve AI classification evaluation.
-- Add AI service health checks and monitoring.
-- Improve analysis-history pagination and filtering.
-- Add clearer error reporting and optimize inference latency.
+- [ ] Improve classification accuracy and model evaluation
+- [ ] Add monitoring and health checks for the AI service
+- [ ] Add automated tests for API endpoints
+- [ ] Add pagination and filtering to analysis history
+- [ ] Improve error reporting
+- [ ] Optimize inference latency and database queries
+
+## 🤝 Contributing
+
+Contributions, issues, and feature requests are welcome.
+
+1. Fork the repository
+2. Create a branch: `git checkout -b feature/your-feature`
+3. Commit your changes: `git commit -m "Add your feature"`
+4. Push the branch: `git push origin feature/your-feature`
+5. Open a Pull Request
 
 ## 👨‍💻 Author
 
 **Harshit Raj**
 
-- GitHub: [@HarshitRaj31](https://github.com/HarshitRaj31)
-- Repository: [ToxicGuard](https://github.com/HarshitRaj31/ToxicGuard)
+[![GitHub](https://img.shields.io/badge/GitHub-HarshitRaj31-181717?style=flat-square&logo=github)](https://github.com/HarshitRaj31)
 
 ## 📄 License
 
-Add the license used by this repository. If the project uses the MIT License, include the corresponding `LICENSE` file.
+This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for details.
+
+> If you choose a different license, update this section and add the matching `LICENSE` file.
 
 ---
 
+<div align="center">
+
 *Built to support safer digital conversations through AI-assisted toxic speech detection.*
+
+⭐ If you found this project useful, consider giving it a star!
+
+</div>
